@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FED1C19B1CF514790084AAB2 /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED1C19A1CF514790084AAB2 /* Level.swift */; };
+		FED1C19D1CF5178A0084AAB2 /* GemColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED1C19C1CF5178A0084AAB2 /* GemColor.swift */; };
+		FEDC227F1CF3B4C0009A6B96 /* Gem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEDC227E1CF3B4C0009A6B96 /* Gem.swift */; };
 		FEFB29EB1CF3A46D002B2BAF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEFB29EA1CF3A46D002B2BAF /* AppDelegate.swift */; };
 		FEFB29ED1CF3A46D002B2BAF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEFB29EC1CF3A46D002B2BAF /* ViewController.swift */; };
 		FEFB29F01CF3A46D002B2BAF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FEFB29EE1CF3A46D002B2BAF /* Main.storyboard */; };
@@ -15,9 +18,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		FEFB29E71CF3A46D002B2BAF /* Gem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gem.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FED1C19A1CF514790084AAB2 /* Level.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Level.swift; sourceTree = "<group>"; };
+		FED1C19C1CF5178A0084AAB2 /* GemColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GemColor.swift; sourceTree = "<group>"; };
+		FEDC227E1CF3B4C0009A6B96 /* Gem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Gem.swift; sourceTree = "<group>"; };
+		FEFB29E71CF3A46D002B2BAF /* Gemicus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gemicus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FEFB29EA1CF3A46D002B2BAF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		FEFB29EC1CF3A46D002B2BAF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		FEFB29EC1CF3A46D002B2BAF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; wrapsLines = 0; };
 		FEFB29EF1CF3A46D002B2BAF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		FEFB29F11CF3A46D002B2BAF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FEFB29F41CF3A46D002B2BAF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -46,7 +52,7 @@
 		FEFB29E81CF3A46D002B2BAF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FEFB29E71CF3A46D002B2BAF /* Gem.app */,
+				FEFB29E71CF3A46D002B2BAF /* Gemicus.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -60,6 +66,9 @@
 				FEFB29F11CF3A46D002B2BAF /* Assets.xcassets */,
 				FEFB29F31CF3A46D002B2BAF /* LaunchScreen.storyboard */,
 				FEFB29F61CF3A46D002B2BAF /* Info.plist */,
+				FEDC227E1CF3B4C0009A6B96 /* Gem.swift */,
+				FED1C19A1CF514790084AAB2 /* Level.swift */,
+				FED1C19C1CF5178A0084AAB2 /* GemColor.swift */,
 			);
 			path = Gem;
 			sourceTree = "<group>";
@@ -67,9 +76,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		FEFB29E61CF3A46D002B2BAF /* Gem */ = {
+		FEFB29E61CF3A46D002B2BAF /* Gemicus */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FEFB29F91CF3A46D002B2BAF /* Build configuration list for PBXNativeTarget "Gem" */;
+			buildConfigurationList = FEFB29F91CF3A46D002B2BAF /* Build configuration list for PBXNativeTarget "Gemicus" */;
 			buildPhases = (
 				FEFB29E31CF3A46D002B2BAF /* Sources */,
 				FEFB29E41CF3A46D002B2BAF /* Frameworks */,
@@ -79,9 +88,9 @@
 			);
 			dependencies = (
 			);
-			name = Gem;
+			name = Gemicus;
 			productName = Gem;
-			productReference = FEFB29E71CF3A46D002B2BAF /* Gem.app */;
+			productReference = FEFB29E71CF3A46D002B2BAF /* Gemicus.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -96,10 +105,11 @@
 				TargetAttributes = {
 					FEFB29E61CF3A46D002B2BAF = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = 85HMBST84J;
 					};
 				};
 			};
-			buildConfigurationList = FEFB29E21CF3A46D002B2BAF /* Build configuration list for PBXProject "Gem" */;
+			buildConfigurationList = FEFB29E21CF3A46D002B2BAF /* Build configuration list for PBXProject "Gemicus" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -112,7 +122,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				FEFB29E61CF3A46D002B2BAF /* Gem */,
+				FEFB29E61CF3A46D002B2BAF /* Gemicus */,
 			);
 		};
 /* End PBXProject section */
@@ -137,6 +147,9 @@
 			files = (
 				FEFB29ED1CF3A46D002B2BAF /* ViewController.swift in Sources */,
 				FEFB29EB1CF3A46D002B2BAF /* AppDelegate.swift in Sources */,
+				FED1C19B1CF514790084AAB2 /* Level.swift in Sources */,
+				FED1C19D1CF5178A0084AAB2 /* GemColor.swift in Sources */,
+				FEDC227F1CF3B4C0009A6B96 /* Gem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,10 +264,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Gem/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.studyoclock.Gem;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Gemicus;
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -262,17 +278,20 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = Gem/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.studyoclock.Gem;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Gemicus;
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		FEFB29E21CF3A46D002B2BAF /* Build configuration list for PBXProject "Gem" */ = {
+		FEFB29E21CF3A46D002B2BAF /* Build configuration list for PBXProject "Gemicus" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FEFB29F71CF3A46D002B2BAF /* Debug */,
@@ -281,13 +300,14 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FEFB29F91CF3A46D002B2BAF /* Build configuration list for PBXNativeTarget "Gem" */ = {
+		FEFB29F91CF3A46D002B2BAF /* Build configuration list for PBXNativeTarget "Gemicus" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FEFB29FA1CF3A46D002B2BAF /* Debug */,
 				FEFB29FB1CF3A46D002B2BAF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
