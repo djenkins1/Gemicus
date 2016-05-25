@@ -26,6 +26,7 @@
 //(DONE)create board from actual level data
 //(DONE)need an overlay shown that shows the winning board
 //(DONE)better handling of gem presses, should not search through every one
+//(DONE)be able to swap gems that are neighbors with long gesture
 //
 //different app icon then default
 //add level data to game board, i.e level title, creator name, your best score...
@@ -45,7 +46,6 @@
 //      animations for gems being pressed
 //      random glint animations for gems
 //      hint animations for gems that are not winning color
-//      be able to swap gems that are neighbors with long gesture
 //		animation for winning the level, and maybe a score screen
 
 import UIKit
@@ -246,7 +246,19 @@ class ViewController: UIViewController
     {
         for gem in self.allGems
         {
+			let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(ViewController.swapLeft(_:)))
+			let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(ViewController.swapRight(_:)))
+			let swipeUp = UISwipeGestureRecognizer(target: self, action: #selector(ViewController.swapUp(_:)))
+			let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(ViewController.swapDown(_:)))
+			swipeLeft.direction = .Left
+			swipeRight.direction = .Right
+			swipeUp.direction = .Up
+			swipeDown.direction = .Down
             gem.gemButton.addTarget( self, action: #selector( self.clickGem) , forControlEvents: .TouchUpInside)
+			gem.gemButton.addGestureRecognizer(swipeLeft)
+			gem.gemButton.addGestureRecognizer(swipeRight)
+			gem.gemButton.addGestureRecognizer(swipeUp)
+			gem.gemButton.addGestureRecognizer(swipeDown)
         }
     }
 
@@ -255,6 +267,80 @@ class ViewController: UIViewController
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+	
+	func swapGems( firstIndex: Int, secondIndex: Int )
+	{
+		if showingOverlay
+		{
+				return
+		}
+		let saveSprite = allGems[ firstIndex ].currentSprite
+		allGems[ firstIndex ].updateSprite( allGems[ secondIndex ].currentSprite )
+		allGems[ secondIndex ].updateSprite( saveSprite )
+	}
+	
+	func swapLeft(gestureRecognizer: UISwipeGestureRecognizer)
+	{
+		let button = gestureRecognizer.view as! UIButton
+		print( "Left")
+		let index = gemDict[ button]
+		let level = Level.defaultLevels()[ currentLevel ]
+		let size = level.totalRows
+		if index! % size == 0
+		{
+			print( "Could not swap edge")
+			return
+		}
+		swapGems( index!, secondIndex: index! - 1 )
+	}
+	
+	func swapRight(gestureRecognizer: UISwipeGestureRecognizer)
+	{
+		let button = gestureRecognizer.view as! UIButton
+		print( "Right")
+		let index = gemDict[ button]
+		let level = Level.defaultLevels()[ currentLevel ]
+		let size = level.totalRows
+		let second = index! + 1
+		if index! % size == size - 1
+		{
+			print( "Could not swap edge")
+			return
+		}
+		swapGems( index!, secondIndex: second )
+	}
+	
+	func swapUp(gestureRecognizer: UISwipeGestureRecognizer)
+	{
+		let button = gestureRecognizer.view as! UIButton
+		print( "Up")
+		let index = gemDict[ button]
+		let level = Level.defaultLevels()[ currentLevel ]
+		let size = level.totalRows
+		let second = index! - size
+		if second < 0
+		{
+			print( "Could not swap edge")
+			return
+		}
+		swapGems( index!, secondIndex: second )
+	}
+	
+	func swapDown(gestureRecognizer: UISwipeGestureRecognizer)
+	{
+		let button = gestureRecognizer.view as! UIButton
+		print( "Down")
+		let index = gemDict[ button]
+		let level = Level.defaultLevels()[ currentLevel ]
+		let size = level.totalRows
+		let second = index! + size
+		if  second >= size * size
+		{
+			print( "Could not swap edge")
+			return
+		}
+		swapGems( index!, secondIndex: second)
+	}
 	
 
 	//fires when a gem is clicked
@@ -297,6 +383,12 @@ class ViewController: UIViewController
 		showingOverlay = true
 		showGemOverlay()
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "winstone")!)
+	}
+	
+	func buttonAction(sender: UIButton, event: UIEvent)
+	{
+		
+
 	}
 }
 
