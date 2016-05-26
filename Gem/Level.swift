@@ -14,21 +14,19 @@ class Level
     var levelAuthor = ""
     var levelName = ""
     var levelData = [Int]()
+	var totalCols = 0
 
-    static func defaultLevels() -> Array<Level>
+	static func defaultLevels( handler : LevelHandler ) -> Array<Level>
     {
-        let gem = GemColor()
-        var toReturn = [Level]()
-        toReturn.append( Level( rows: 3 , author: "DJ" , name: "Level 1", data: [ gem.RED , gem.RED, gem.RED , gem.RED, gem.WHITE , gem.RED, gem.RED, gem.RED, gem.RED ] ) )
-        toReturn.append( Level( rows: 4 , author: "DJ" , name: "Level 2", data: [ gem.WHITE, gem.WHITE, gem.WHITE, gem.WHITE, gem.WHITE, gem.RED, gem.RED, gem.WHITE, gem.WHITE, gem.RED, gem.RED, gem.WHITE, gem.WHITE, gem.WHITE, gem.WHITE, gem.WHITE] ) )
-        return toReturn
+		return handler.levels
     }
 
-    init( rows: Int, author: String, name: String, data: Array<Int> )
+	init( rows: Int, cols: Int, author: String, name: String, data: Array<Int> )
     {
         self.totalRows = rows
+		self.totalCols = cols
         self.levelAuthor = author
         self.levelName = name
         self.levelData = data
-    }
+	}
 }

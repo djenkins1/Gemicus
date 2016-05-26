@@ -1,0 +1,63 @@
+@name
+	Level 1
+@author
+	Dilan Jenkins
+@rows
+	2
+@cols
+	2
+@data
+	red		white
+	white	red
+#
+@name
+	Level 2
+@author
+	Dilan Jenkins
+@rows
+	2
+@cols
+	2
+@data
+	blue	white
+	blue	white
+#
+@name
+	Level 3
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	red		red		red
+	red		white	red
+	red		red		red
+#
+@name
+	Level 4
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	blue	white	blue
+	white	blue	white
+	blue	white	blue
+#
+@name
+	Level 5
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	blue	yellow	blue
+	yellow	yellow	yellow
+	blue	yellow	blue
+#

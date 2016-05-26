@@ -8,14 +8,6 @@
 
 //TODO
 //============
-//views
-//      menu
-//      all levels
-//      move game board into own view
-//      level editor view?
-//      credits view, with artists who created artwork
-//          problem: Need to find artists from laptop, not in archived files
-//
 //(DONE)add functioning timer to game board
 //(DONE)should resize gems based on size of board/screen
 //(DONE)need better title for game:       Gemicus
@@ -27,17 +19,28 @@
 //(DONE)need an overlay shown that shows the winning board
 //(DONE)better handling of gem presses, should not search through every one
 //(DONE)be able to swap gems that are neighbors with long gesture
+//(DONE)has multiple timer objects updating clock, need to stop the timer object when view is destroyed
+//(DONE)read in default levels from another file so that they are not in the code
 //
-//different app icon then default
-//add level data to game board, i.e level title, creator name, your best score...
-//read in default levels from another file so that they are not in the code
+//views
+//      menu
+//      all levels
+//      move game board into own view
+//      level editor view?
+//      credits view, with artists who created artwork
+//          problem: Need to find artists from laptop, not in archived files
+//
+//rewrite code to allow for non-square boards
+//(?)gui should be resized similarly to gems based on total screen size
+//somehow change the next level button so that it is different when you can go to next level
+//should check to see if won after swapping gems as well
+//change background of timer to hover background when level won
 //add in GUI buttons programatically(i.e timer/overlay)
-//      should be resized similarly to gems based on total screen size
-//			timer on top(DONE), back to menu button before timer, overlay button
-//				popup/enable a next level button when level is won
-//				(DONE)maybe have press on timer be the overlay button
-//			underneath timer have level name centered
-//		maybe keep level name on same line as buttons if screen is big enough
+//		(DONE)timer on top
+//		(DONE)popup/enable a next level button when level is won
+//		(DONE)maybe have press on timer be the overlay button
+//		(DONE)level name centered, above buttons
+//		back to menu button before timer
 //
 //future ideas
 //      (*)level editor, can save levels to own device or share with others via Gem Server
@@ -47,6 +50,11 @@
 //      random glint animations for gems
 //      hint animations for gems that are not winning color
 //		animation for winning the level, and maybe a score screen
+//		find better gem sprites that match background more?
+//		better background image for level title other then the timer background
+//		different app icon then default
+//		add level data to game board, i.e level title(DONE), creator name, your best score...
+//			maybe just for player created levels
 
 import UIKit
 
@@ -64,6 +72,9 @@ class ViewController: UIViewController
 	//a timer button that shows the total time
 	var timerView: UIButton!
 	
+	//a button that when pushed goes to next level
+	var nextButton: UIButton!
+	
 	//a dictionary for showing which button corresponds to which index in allGems
 	var gemDict = [UIButton : Int]()
 	
@@ -75,33 +86,69 @@ class ViewController: UIViewController
 	
 	//keeps a copy of the colors of each gem for when the overlay is being shown
 	var gemCopy = [Int]()
+	
+	var levelHandler: LevelHandler!
 
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor(patternImage: UIImage(named: "stone")!)
-		let level = Level.defaultLevels()[ currentLevel ]
-		createGUI()
-		createGems( level.totalRows * level.totalRows )
-        addGemPressEvents()
-		showGemOverlay()
-        timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(self.updateTime), userInfo: nil, repeats: true)
+		readLevels()
+		createView()
     }
 	
+	func createView()
+	{
+		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "stone")!)
+		let level = Level.defaultLevels( levelHandler)[ currentLevel ]
+		createGUI()
+		createGems( level.totalRows * level.totalRows )
+		addGemPressEvents()
+		showGemOverlay()
+		timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(self.updateTime), userInfo: nil, repeats: true)
+	}
+	
+	func resetMyView()
+	{
+		timer.invalidate()
+		for view in self.view.subviews
+		{
+			view.removeFromSuperview()
+		}
+	}
 	//setups the different GUI elements around the game board
 	func createGUI()
 	{
-		timerView = UIButton(type: UIButtonType.Custom) as UIButton
-		timerView.addTarget( self, action: #selector( self.toggleOverlay) , forControlEvents: .TouchUpInside)
-		let x = 0
-		let y = 20
 		let width = 128
 		let height = 40
+		let x = 0
+		let y = 20 + height + 2
+		
+		timerView = UIButton(type: UIButtonType.Custom) as UIButton
+		timerView.addTarget( self, action: #selector( self.toggleOverlay) , forControlEvents: .TouchUpInside)
 		timerView.frame = CGRectMake( CGFloat( x ), CGFloat( y ), CGFloat( width ), CGFloat(height))
 		self.view.addSubview(timerView)
 		let newImage = UIImage( named: "timer" ) as UIImage?
+		let hiddenImage = UIImage( named: "hover" ) as UIImage?
 		timerView.setBackgroundImage( newImage, forState: .Normal )
 		changeTimerClock()
+		
+		nextButton = UIButton(type: UIButtonType.Custom) as UIButton
+		nextButton.addTarget( self, action: #selector( self.gotoNextLevel) , forControlEvents: .TouchUpInside)
+		nextButton.userInteractionEnabled = false
+		nextButton.frame = CGRectMake( CGFloat( x + width + 2 ), CGFloat( y ), CGFloat( 48 ), CGFloat(height))
+		nextButton.setTitle( "->" , forState: .Normal )
+		nextButton.setBackgroundImage( hiddenImage, forState: .Normal )
+		self.view.addSubview(nextButton)
+
+		let level = Level.defaultLevels( levelHandler )[ currentLevel ]
+		let screenWidth = UIScreen.mainScreen().bounds.width
+		let levelTitle = UIButton(type: UIButtonType.Custom) as UIButton
+		levelTitle.frame = CGRectMake( CGFloat( x ), CGFloat( y - height - 2), CGFloat( screenWidth ), CGFloat( height ))
+		levelTitle.setTitle( level.levelName, forState: .Normal )
+		levelTitle.setBackgroundImage( hiddenImage, forState: .Normal )
+		levelTitle.userInteractionEnabled = false
+		//levelTitle.backgroundColor = UIColor(patternImage: UIImage(named: "winstone")!)
+		self.view.addSubview( levelTitle )
 	}
 	
 	//called when the overlay button is pressed
@@ -118,6 +165,23 @@ class ViewController: UIViewController
 		}
 	}
 	
+	func gotoNextLevel()
+	{
+		resetMyView()
+		allGems.removeAll()
+		timeCount = 0
+		gemDict.removeAll()
+		currentLevel = currentLevel + 1
+		if ( currentLevel >= Level.defaultLevels( levelHandler ).count )
+		{
+			print( "Game over!")
+			return
+		}
+		showingOverlay = false
+		gemCopy.removeAll()
+		createView()
+	}
+	
 	//returns true if the current game board is the winning board or false otherwise
 	//returns false if currently showing the level overlay
 	func checkWin() -> Bool
@@ -127,7 +191,7 @@ class ViewController: UIViewController
 				return false
 		}
 		
-		let level = Level.defaultLevels()[ currentLevel ]
+		let level = Level.defaultLevels( levelHandler )[ currentLevel ]
 		var index = -1
 		for gem in allGems
 		{
@@ -179,7 +243,7 @@ class ViewController: UIViewController
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
 		gemCopy.removeAll()
 		showingOverlay = true
-		let level = Level.defaultLevels()[ currentLevel ]
+		let level = Level.defaultLevels( levelHandler )[ currentLevel ]
 		var index = -1
 		for gem in allGems
 		{
@@ -282,9 +346,8 @@ class ViewController: UIViewController
 	func swapLeft(gestureRecognizer: UISwipeGestureRecognizer)
 	{
 		let button = gestureRecognizer.view as! UIButton
-		print( "Left")
 		let index = gemDict[ button]
-		let level = Level.defaultLevels()[ currentLevel ]
+		let level = Level.defaultLevels( levelHandler )[ currentLevel ]
 		let size = level.totalRows
 		if index! % size == 0
 		{
@@ -297,9 +360,8 @@ class ViewController: UIViewController
 	func swapRight(gestureRecognizer: UISwipeGestureRecognizer)
 	{
 		let button = gestureRecognizer.view as! UIButton
-		print( "Right")
 		let index = gemDict[ button]
-		let level = Level.defaultLevels()[ currentLevel ]
+		let level = Level.defaultLevels( levelHandler )[ currentLevel ]
 		let size = level.totalRows
 		let second = index! + 1
 		if index! % size == size - 1
@@ -313,9 +375,8 @@ class ViewController: UIViewController
 	func swapUp(gestureRecognizer: UISwipeGestureRecognizer)
 	{
 		let button = gestureRecognizer.view as! UIButton
-		print( "Up")
 		let index = gemDict[ button]
-		let level = Level.defaultLevels()[ currentLevel ]
+		let level = Level.defaultLevels( levelHandler )[ currentLevel ]
 		let size = level.totalRows
 		let second = index! - size
 		if second < 0
@@ -329,9 +390,8 @@ class ViewController: UIViewController
 	func swapDown(gestureRecognizer: UISwipeGestureRecognizer)
 	{
 		let button = gestureRecognizer.view as! UIButton
-		print( "Down")
 		let index = gemDict[ button]
-		let level = Level.defaultLevels()[ currentLevel ]
+		let level = Level.defaultLevels( levelHandler )[ currentLevel ]
 		let size = level.totalRows
 		let second = index! + size
 		if  second >= size * size
@@ -383,12 +443,33 @@ class ViewController: UIViewController
 		showingOverlay = true
 		showGemOverlay()
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "winstone")!)
+		let newImage = UIImage( named: "button" ) as UIImage?
+		nextButton.setBackgroundImage( newImage, forState: .Normal )
+		nextButton.userInteractionEnabled = true
 	}
 	
-	func buttonAction(sender: UIButton, event: UIEvent)
+	func readLevels()
 	{
+		if let filepath = NSBundle.mainBundle().pathForResource("Levels", ofType: "txt")
+		{
+			do
+			{
+				let contents = try NSString(contentsOfFile: filepath, usedEncoding: nil) as String
+				//print(contents)
+				levelHandler = LevelHandler( levels: Process( input: contents ).getLevels() )
+			}
+			catch
+			{
+				// contents could not be loaded
+				print( "Could not load contents")
+			}
+		}
+		else
+		{
+			print( "File not found" )
+		}
 		
-
 	}
+	
 }
 

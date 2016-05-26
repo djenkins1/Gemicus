@@ -15,4 +15,21 @@ class GemColor
     let BLUE = 3
     let YELLOW = 4
     let WHITE = 5
+	
+	func getColorFromString( input : String ) -> Int
+	{
+		var colorMap = [ String : Int ]()
+		let safeInput = input.lowercaseString
+		colorMap[ "purple" ] = PURPLE
+		colorMap[ "red" ] = RED
+		colorMap[ "green"] = GREEN
+		colorMap[ "blue"] = BLUE
+		colorMap[ "white"] = WHITE
+		colorMap[ "yellow"] = YELLOW
+		if let toReturn = colorMap[ safeInput ]
+		{
+			return toReturn
+		}
+		return -1
+	}
 }
