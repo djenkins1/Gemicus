@@ -21,26 +21,27 @@
 //(DONE)be able to swap gems that are neighbors with long gesture
 //(DONE)has multiple timer objects updating clock, need to stop the timer object when view is destroyed
 //(DONE)read in default levels from another file so that they are not in the code
+//(DONE)should check to see if won after swapping gems as well
 //
 //views
-//      menu
+//      (DONE)menu
 //      all levels
-//      move game board into own view
 //      level editor view?
 //      credits view, with artists who created artwork
 //          problem: Need to find artists from laptop, not in archived files
 //
-//rewrite code to allow for non-square boards
 //(?)gui should be resized similarly to gems based on total screen size
+//rewrite code to allow for non-square boards
 //somehow change the next level button so that it is different when you can go to next level
-//should check to see if won after swapping gems as well
 //change background of timer to hover background when level won
+//handle winning last level more gracefully, i.e go back to main menu
 //add in GUI buttons programatically(i.e timer/overlay)
 //		(DONE)timer on top
 //		(DONE)popup/enable a next level button when level is won
 //		(DONE)maybe have press on timer be the overlay button
 //		(DONE)level name centered, above buttons
-//		back to menu button before timer
+//		(DONE)back to menu button before timer
+//		center the timer in the view and position prev/next buttons on either side
 //
 //future ideas
 //      (*)level editor, can save levels to own device or share with others via Gem Server
@@ -53,8 +54,11 @@
 //		find better gem sprites that match background more?
 //		better background image for level title other then the timer background
 //		different app icon then default
+//		longer swipes should do multiple swaps of gems if possible
 //		add level data to game board, i.e level title(DONE), creator name, your best score...
 //			maybe just for player created levels
+//		powerup system
+//			examples: change all gems to certain color
 
 import UIKit
 
@@ -79,7 +83,8 @@ class ViewController: UIViewController
 	var gemDict = [UIButton : Int]()
 	
 	//the current level based on the index in the Level.defaultLevels array
-	var currentLevel = 0
+	//start it off at -1 so that gotoNextLevel function works on game start
+	var currentLevel = -1
 	
 	//true if currently showing level overlay or false otherwise
 	var showingOverlay = false
@@ -87,16 +92,63 @@ class ViewController: UIViewController
 	//keeps a copy of the colors of each gem for when the overlay is being shown
 	var gemCopy = [Int]()
 	
+	//stores the data for the default levels
 	var levelHandler: LevelHandler!
 
     override func viewDidLoad()
     {
         super.viewDidLoad()
 		readLevels()
-		createView()
+		createMenuView()
     }
 	
-	func createView()
+	//deletes all current elements in the view and makes the menu GUI
+	func createMenuView()
+	{
+		resetMyView()
+		clearBoardData()
+		let gameTitle = UIButton(type: UIButtonType.Custom) as UIButton
+		let playButton = UIButton(type: UIButtonType.Custom) as UIButton
+		let infoButton = UIButton(type: UIButtonType.Custom) as UIButton
+		let credButton = UIButton(type: UIButtonType.Custom) as UIButton
+		
+		let screenWidth = UIScreen.mainScreen().bounds.width
+		let titleWidth = Int( ceil(screenWidth * 0.5) )
+		let padding = Int( ceil( UIScreen.mainScreen().bounds.height * 0.02 ) )
+		let centerX = screenWidth / 2
+		let startY = Int( ceil( UIScreen.mainScreen().bounds.width * 0.25 ) )
+		let defaultWidth = 128
+		let defaultHeight = 40
+		gameTitle.frame = CGRectMake( CGFloat( centerX - CGFloat( titleWidth / 2 ) ), CGFloat( startY ), CGFloat( titleWidth ), CGFloat(defaultHeight ))
+		playButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + padding + defaultHeight ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
+		infoButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (2 * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
+		credButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (3 * (padding + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
+		
+		let backImage = UIImage( named: "button" ) as UIImage?
+		let titleImage = UIImage( named: "hover" ) as UIImage?
+		gameTitle.setBackgroundImage( titleImage, forState: .Normal )
+		playButton.setBackgroundImage( backImage, forState: .Normal )
+		infoButton.setBackgroundImage( backImage, forState: .Normal )
+		credButton.setBackgroundImage( backImage, forState: .Normal )
+		
+		gameTitle.setTitle( "Gemicus", forState: .Normal )
+		gameTitle.userInteractionEnabled = false
+		playButton.setTitle( "Play", forState: .Normal )
+		infoButton.setTitle( "Help", forState: .Normal )
+		credButton.setTitle( "Credits", forState: .Normal )
+		
+		self.view.addSubview(gameTitle)
+		self.view.addSubview(playButton)
+		self.view.addSubview(infoButton)
+		self.view.addSubview(credButton)
+		
+		//todo: need to add actions to each button
+		//playButton.addTarget( self, action: #selector( self.toggleOverlay) , forControlEvents: .TouchUpInside)
+		playButton.addTarget( self, action: #selector( self.gotoNextLevel) , forControlEvents: .TouchUpInside)
+		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
+	}
+	
+	func createGameView()
 	{
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "stone")!)
 		let level = Level.defaultLevels( levelHandler)[ currentLevel ]
@@ -107,6 +159,7 @@ class ViewController: UIViewController
 		timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(self.updateTime), userInfo: nil, repeats: true)
 	}
 	
+	//removes all the elements currently in the view
 	func resetMyView()
 	{
 		timer.invalidate()
@@ -115,6 +168,7 @@ class ViewController: UIViewController
 			view.removeFromSuperview()
 		}
 	}
+	
 	//setups the different GUI elements around the game board
 	func createGUI()
 	{
@@ -129,6 +183,7 @@ class ViewController: UIViewController
 		self.view.addSubview(timerView)
 		let newImage = UIImage( named: "timer" ) as UIImage?
 		let hiddenImage = UIImage( named: "hover" ) as UIImage?
+		let buttonImage = UIImage( named: "button" ) as UIImage?
 		timerView.setBackgroundImage( newImage, forState: .Normal )
 		changeTimerClock()
 		
@@ -139,6 +194,13 @@ class ViewController: UIViewController
 		nextButton.setTitle( "->" , forState: .Normal )
 		nextButton.setBackgroundImage( hiddenImage, forState: .Normal )
 		self.view.addSubview(nextButton)
+		
+		let prevButton = UIButton(type: UIButtonType.Custom) as UIButton
+		prevButton.frame = CGRectMake( CGFloat( x + 4 + width + 48 ), CGFloat( y ), CGFloat( 48 ), CGFloat(height))
+		prevButton.setTitle( "<-" , forState: .Normal )
+		prevButton.setBackgroundImage( buttonImage, forState: .Normal )
+		prevButton.addTarget( self, action: #selector( self.backToMenu) , forControlEvents: .TouchUpInside)
+		self.view.addSubview(prevButton)
 
 		let level = Level.defaultLevels( levelHandler )[ currentLevel ]
 		let screenWidth = UIScreen.mainScreen().bounds.width
@@ -149,6 +211,12 @@ class ViewController: UIViewController
 		levelTitle.userInteractionEnabled = false
 		//levelTitle.backgroundColor = UIColor(patternImage: UIImage(named: "winstone")!)
 		self.view.addSubview( levelTitle )
+	}
+	
+	func backToMenu()
+	{
+		currentLevel = currentLevel - 1
+		createMenuView()
 	}
 	
 	//called when the overlay button is pressed
@@ -165,12 +233,18 @@ class ViewController: UIViewController
 		}
 	}
 	
-	func gotoNextLevel()
+	func clearBoardData()
 	{
-		resetMyView()
 		allGems.removeAll()
 		timeCount = 0
 		gemDict.removeAll()
+	}
+	
+	//sets the view up for the next level
+	func gotoNextLevel()
+	{
+		resetMyView()
+		clearBoardData()
 		currentLevel = currentLevel + 1
 		if ( currentLevel >= Level.defaultLevels( levelHandler ).count )
 		{
@@ -179,7 +253,7 @@ class ViewController: UIViewController
 		}
 		showingOverlay = false
 		gemCopy.removeAll()
-		createView()
+		createGameView()
 	}
 	
 	//returns true if the current game board is the winning board or false otherwise
@@ -332,6 +406,7 @@ class ViewController: UIViewController
         // Dispose of any resources that can be recreated.
     }
 	
+	//swaps the colors of the gems with the indexes provided
 	func swapGems( firstIndex: Int, secondIndex: Int )
 	{
 		if showingOverlay
@@ -341,6 +416,12 @@ class ViewController: UIViewController
 		let saveSprite = allGems[ firstIndex ].currentSprite
 		allGems[ firstIndex ].updateSprite( allGems[ secondIndex ].currentSprite )
 		allGems[ secondIndex ].updateSprite( saveSprite )
+		
+		//if the board matches the winning board then the level is complete
+		if checkWin()
+		{
+			endLevelWon()
+		}
 	}
 	
 	func swapLeft(gestureRecognizer: UISwipeGestureRecognizer)
@@ -448,6 +529,7 @@ class ViewController: UIViewController
 		nextButton.userInteractionEnabled = true
 	}
 	
+	//reads the level data from the levels file and puts it into the level handler
 	func readLevels()
 	{
 		if let filepath = NSBundle.mainBundle().pathForResource("Levels", ofType: "txt")
