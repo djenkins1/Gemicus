@@ -2,7 +2,7 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "button.png",
+      "filename" : "marbleButton.png",
       "scale" : "1x"
     },
     {

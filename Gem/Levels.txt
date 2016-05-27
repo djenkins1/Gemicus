@@ -102,3 +102,33 @@
 	green	white	red		white	green
 	green	green	white	green	green
 #
+@name
+	Black Flag
+@author
+	Dilan Jenkins
+@rows
+	5
+@cols
+	5
+@data
+	black	black	black	black	black
+	black	white	black	white	black
+	black	black	black	black	black
+	black	white	black	white	black
+	black	white	white	white	black
+#
+@name
+	Arizona
+@author
+	Dilan Jenkins
+@rows
+	5
+@cols
+	5
+@data
+	blue	blue	red		blue	blue
+	blue	red		blue	red		blue
+	blue	red		red		red		blue
+	blue	red		blue	red		blue
+	blue	red		blue	red		blue
+#

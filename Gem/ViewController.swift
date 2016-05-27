@@ -22,8 +22,12 @@
 //(DONE)has multiple timer objects updating clock, need to stop the timer object when view is destroyed
 //(DONE)read in default levels from another file so that they are not in the code
 //(DONE)should check to see if won after swapping gems as well
-//(DONE)change background of timer to hover background when level won
+//(SCRAP)change background of timer to hover background when level won
 //(DONE)handle winning last level more gracefully
+//(DONE)somehow change the next level button so that it is different when you can go to next level
+//(DONE)have different backgrounds then current for menu buttons
+//		(DONE)find better gem sprites that match background more?
+//		(DONE)better background image for level title other then the timer background
 //(DONE)add in GUI buttons programatically(i.e timer/overlay)
 //		(DONE)timer on top
 //		(DONE)popup/enable a next level button when level is won
@@ -42,22 +46,23 @@
 //
 //(?)gui should be resized similarly to gems based on total screen size
 //rewrite code to allow for non-square boards
-//somehow change the next level button so that it is different when you can go to next level
 //disable the back button when the timer is going, i.e only allow backToMenu when overlay shown
 //clicking on level title should bring you too all levels view
 //add title for levels view like in game board
 //add level info preview at bottom of level view
+//make the text color for title backgrounds be non-white, i.e darker
+//		also make the text color for menuButton backgrounds be non-white
+//		see bookmarks, have stack overflow answer that works
 //
 //future ideas
 //      (*)level editor, can save levels to own device or share with others via Gem Server
 //		(*)rating system for each created/default level, posts to Gem Server. Allow rating on score screen
+//		change arrows on prev/next buttons to actual images?
 //      search created levels by author,title...
 //      animations for gems being pressed
 //      random glint animations for gems
 //      hint animations for gems that are not winning color
 //		animation for winning the level, and maybe a score screen
-//		find better gem sprites that match background more?
-//		better background image for level title other then the timer background
 //		different app icon then default
 //		if level button size gets below certain amount put multiple pages on all levels view
 //		longer swipes should do multiple swaps of gems if possible
@@ -131,15 +136,15 @@ class ViewController: UIViewController
 		let centerX = screenWidth / 2
 		let startY = Int( ceil( UIScreen.mainScreen().bounds.width * 0.33 ) )
 		let defaultWidth = 128
-		let defaultHeight = 40
+		let defaultHeight = 32
 		gameTitle.frame = CGRectMake( CGFloat( centerX - CGFloat( titleWidth / 2 ) ), CGFloat( startY ), CGFloat( titleWidth ), CGFloat(defaultHeight ))
 		playButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + padding + defaultHeight ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
 		levelButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (2 * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
 		infoButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (3 * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
 		credButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (4 * (padding + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
 		
-		let backImage = UIImage( named: "button" ) as UIImage?
-		let titleImage = UIImage( named: "hover" ) as UIImage?
+		let backImage = UIImage( named: "menuButton" ) as UIImage?
+		let titleImage = UIImage( named: "title" ) as UIImage?
 		gameTitle.setBackgroundImage( titleImage, forState: .Normal )
 		playButton.setBackgroundImage( backImage, forState: .Normal )
 		infoButton.setBackgroundImage( backImage, forState: .Normal )
@@ -257,9 +262,10 @@ class ViewController: UIViewController
 		timerView.addTarget( self, action: #selector( self.toggleOverlay) , forControlEvents: .TouchUpInside)
 		timerView.frame = CGRectMake( CGFloat( centerX - ( width / 2 ) ), CGFloat( y ), CGFloat( width ), CGFloat(height))
 		self.view.addSubview(timerView)
-		let newImage = UIImage( named: "timer" ) as UIImage?
+		let newImage = UIImage( named: "menuButton" ) as UIImage?
 		let hiddenImage = UIImage( named: "hover" ) as UIImage?
 		let buttonImage = UIImage( named: "button" ) as UIImage?
+		let titleImage = UIImage( named: "title" ) as UIImage?
 		timerView.setBackgroundImage( newImage, forState: .Normal )
 		changeTimerClock()
 		
@@ -283,7 +289,7 @@ class ViewController: UIViewController
 		let levelTitle = UIButton(type: UIButtonType.Custom) as UIButton
 		levelTitle.frame = CGRectMake( CGFloat( x ), CGFloat( y - height - 2), CGFloat( screenWidth ), CGFloat( height ))
 		levelTitle.setTitle( level.levelName, forState: .Normal )
-		levelTitle.setBackgroundImage( hiddenImage, forState: .Normal )
+		levelTitle.setBackgroundImage( titleImage, forState: .Normal )
 		levelTitle.userInteractionEnabled = false
 		self.view.addSubview( levelTitle )
 	}
@@ -586,8 +592,6 @@ class ViewController: UIViewController
 	{
 		print( "Level won!")
 		timerView.userInteractionEnabled = false
-		let titleImage = UIImage( named: "hover" ) as UIImage?
-		timerView.setBackgroundImage( titleImage, forState: .Normal )
 		showingOverlay = true
 		showGemOverlay()
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "winstone")!)

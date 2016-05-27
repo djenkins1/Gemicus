@@ -12,7 +12,7 @@ class Gem
 {
     weak var gemButton: UIButton!
     var currentSprite: Int!
-    let maxSprites = 5
+    let maxSprites = 7
     
     init( gemButton: UIButton, currentSprite: Int)
     {
