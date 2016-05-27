@@ -22,26 +22,31 @@
 //(DONE)has multiple timer objects updating clock, need to stop the timer object when view is destroyed
 //(DONE)read in default levels from another file so that they are not in the code
 //(DONE)should check to see if won after swapping gems as well
+//(DONE)change background of timer to hover background when level won
+//(DONE)handle winning last level more gracefully
+//(DONE)add in GUI buttons programatically(i.e timer/overlay)
+//		(DONE)timer on top
+//		(DONE)popup/enable a next level button when level is won
+//		(DONE)maybe have press on timer be the overlay button
+//		(DONE)level name centered, above buttons
+//		(DONE)back to menu button before timer
+//		(DONE)center the timer in the view and position prev/next buttons on either side
 //
 //views
 //      (DONE)menu
-//      all levels
-//      level editor view?
+//      (DONE)all levels view
+//      level editor view, would need to get size of board from user somehow(maybe allow dynamic resizing?)
+//		help/info view. Maybe have a tutorial?
 //      credits view, with artists who created artwork
 //          problem: Need to find artists from laptop, not in archived files
 //
 //(?)gui should be resized similarly to gems based on total screen size
 //rewrite code to allow for non-square boards
 //somehow change the next level button so that it is different when you can go to next level
-//change background of timer to hover background when level won
-//handle winning last level more gracefully, i.e go back to main menu
-//add in GUI buttons programatically(i.e timer/overlay)
-//		(DONE)timer on top
-//		(DONE)popup/enable a next level button when level is won
-//		(DONE)maybe have press on timer be the overlay button
-//		(DONE)level name centered, above buttons
-//		(DONE)back to menu button before timer
-//		center the timer in the view and position prev/next buttons on either side
+//disable the back button when the timer is going, i.e only allow backToMenu when overlay shown
+//clicking on level title should bring you too all levels view
+//add title for levels view like in game board
+//add level info preview at bottom of level view
 //
 //future ideas
 //      (*)level editor, can save levels to own device or share with others via Gem Server
@@ -54,11 +59,18 @@
 //		find better gem sprites that match background more?
 //		better background image for level title other then the timer background
 //		different app icon then default
+//		if level button size gets below certain amount put multiple pages on all levels view
 //		longer swipes should do multiple swaps of gems if possible
+//			see bookmarks, have stack overflow answer that could work here
 //		add level data to game board, i.e level title(DONE), creator name, your best score...
 //			maybe just for player created levels
+//			maybe show up on win screen for the level?
 //		powerup system
 //			examples: change all gems to certain color
+//		save progress of levels beaten/times/number of moves/number of color changes
+//		maybe have gems centered in view
+//		put levels into level packs, i.e folders with names
+//			have level pack named ipad that has larger boards
 
 import UIKit
 
@@ -111,18 +123,20 @@ class ViewController: UIViewController
 		let playButton = UIButton(type: UIButtonType.Custom) as UIButton
 		let infoButton = UIButton(type: UIButtonType.Custom) as UIButton
 		let credButton = UIButton(type: UIButtonType.Custom) as UIButton
+		let levelButton = UIButton(type: UIButtonType.Custom) as UIButton
 		
 		let screenWidth = UIScreen.mainScreen().bounds.width
 		let titleWidth = Int( ceil(screenWidth * 0.5) )
-		let padding = Int( ceil( UIScreen.mainScreen().bounds.height * 0.02 ) )
+		let padding = Int( ceil( UIScreen.mainScreen().bounds.height * 0.04 ) )
 		let centerX = screenWidth / 2
-		let startY = Int( ceil( UIScreen.mainScreen().bounds.width * 0.25 ) )
+		let startY = Int( ceil( UIScreen.mainScreen().bounds.width * 0.33 ) )
 		let defaultWidth = 128
 		let defaultHeight = 40
 		gameTitle.frame = CGRectMake( CGFloat( centerX - CGFloat( titleWidth / 2 ) ), CGFloat( startY ), CGFloat( titleWidth ), CGFloat(defaultHeight ))
 		playButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + padding + defaultHeight ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
-		infoButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (2 * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
-		credButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (3 * (padding + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
+		levelButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (2 * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
+		infoButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (3 * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
+		credButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (4 * (padding + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
 		
 		let backImage = UIImage( named: "button" ) as UIImage?
 		let titleImage = UIImage( named: "hover" ) as UIImage?
@@ -130,22 +144,32 @@ class ViewController: UIViewController
 		playButton.setBackgroundImage( backImage, forState: .Normal )
 		infoButton.setBackgroundImage( backImage, forState: .Normal )
 		credButton.setBackgroundImage( backImage, forState: .Normal )
+		levelButton.setBackgroundImage( backImage, forState: .Normal )
 		
 		gameTitle.setTitle( "Gemicus", forState: .Normal )
 		gameTitle.userInteractionEnabled = false
 		playButton.setTitle( "Play", forState: .Normal )
 		infoButton.setTitle( "Help", forState: .Normal )
 		credButton.setTitle( "Credits", forState: .Normal )
+		levelButton.setTitle( "Levels", forState: .Normal )
 		
 		self.view.addSubview(gameTitle)
 		self.view.addSubview(playButton)
+		self.view.addSubview(levelButton)
 		self.view.addSubview(infoButton)
 		self.view.addSubview(credButton)
 		
 		//todo: need to add actions to each button
 		//playButton.addTarget( self, action: #selector( self.toggleOverlay) , forControlEvents: .TouchUpInside)
 		playButton.addTarget( self, action: #selector( self.gotoNextLevel) , forControlEvents: .TouchUpInside)
+		levelButton.addTarget( self, action: #selector( self.gotoLevelsView) , forControlEvents: .TouchUpInside)
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
+	}
+	
+	func gotoLevelsView()
+	{
+		resetMyView()
+		createLevelsView()
 	}
 	
 	func createGameView()
@@ -157,6 +181,54 @@ class ViewController: UIViewController
 		addGemPressEvents()
 		showGemOverlay()
 		timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(self.updateTime), userInfo: nil, repeats: true)
+	}
+	
+	func createLevelsView()
+	{
+		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
+		var index = -1
+		let totalLevels = Level.defaultLevels(levelHandler).count
+		let perRow = ceil( sqrt( Double(totalLevels) ) )
+		let screenSize: CGRect = UIScreen.mainScreen().bounds
+		let screenWidth = screenSize.width * 0.8
+		let screenHeight = screenSize.height * 0.8
+		//let the padding to the left of the gem board be based on the width of the screen
+		let startX = floor( Double( screenSize.width * 0.15 ) )
+		//let the top left corner of the game board be based on the height of the screen
+		let startY = floor( Double( screenSize.height * 0.2 ))
+		let totalSize = floor( screenWidth + screenHeight )
+		let squareSize = Int(totalSize) / Int( ( perRow ) * 4 )
+		let backImage = UIImage( named: "button" ) as UIImage?
+		let paddingWidth = screenWidth * 0.02
+		let paddingHeight = screenHeight * 0.02
+		for _ in Level.defaultLevels( levelHandler )
+		{
+			index = index + 1
+			let levelButton = UIButton(type: UIButtonType.Custom) as UIButton
+			let column = ( index % Int( perRow ) )
+			let row = ( index / Int(perRow) )
+			let x = Double( ( CGFloat(column)  * (CGFloat( squareSize ) + paddingWidth ) )  ) + startX
+			let y = Double( ( CGFloat(row)  * (CGFloat( squareSize ) + paddingHeight ) )  ) + startY
+			levelButton.frame = CGRectMake( CGFloat( x ), CGFloat( y ), CGFloat( squareSize ), CGFloat(squareSize))
+			levelButton.setTitle( "\(index + 1)" , forState: .Normal )
+			levelButton.setBackgroundImage( backImage, forState: .Normal )
+			self.view.addSubview( levelButton )
+			levelButton.addTarget( self, action: #selector( self.clickLevelButton(_:)) , forControlEvents: .TouchUpInside)
+		}
+	}
+	
+	func clickLevelButton( sender: AnyObject )
+	{
+		let button = sender as! UIButton
+		let myValue = Int( button.currentTitle! )! - 1
+		if myValue < 0
+		{
+			print( "PROBLEM WITH Value \(myValue)")
+			return
+		}
+		
+		currentLevel = myValue - 1
+		gotoNextLevel()
 	}
 	
 	//removes all the elements currently in the view
@@ -176,10 +248,14 @@ class ViewController: UIViewController
 		let height = 40
 		let x = 0
 		let y = 20 + height + 2
+		let buttonWidth = 48
+		let screenWidth = UIScreen.mainScreen().bounds.width
+		let centerX = Int( ceil(screenWidth * 0.5))
+		//let screenWidth = UIScreen.mainScreen().bounds.width * 0.5
 		
 		timerView = UIButton(type: UIButtonType.Custom) as UIButton
 		timerView.addTarget( self, action: #selector( self.toggleOverlay) , forControlEvents: .TouchUpInside)
-		timerView.frame = CGRectMake( CGFloat( x ), CGFloat( y ), CGFloat( width ), CGFloat(height))
+		timerView.frame = CGRectMake( CGFloat( centerX - ( width / 2 ) ), CGFloat( y ), CGFloat( width ), CGFloat(height))
 		self.view.addSubview(timerView)
 		let newImage = UIImage( named: "timer" ) as UIImage?
 		let hiddenImage = UIImage( named: "hover" ) as UIImage?
@@ -190,26 +266,25 @@ class ViewController: UIViewController
 		nextButton = UIButton(type: UIButtonType.Custom) as UIButton
 		nextButton.addTarget( self, action: #selector( self.gotoNextLevel) , forControlEvents: .TouchUpInside)
 		nextButton.userInteractionEnabled = false
-		nextButton.frame = CGRectMake( CGFloat( x + width + 2 ), CGFloat( y ), CGFloat( 48 ), CGFloat(height))
+		nextButton.frame = CGRectMake( CGFloat( centerX + ( width / 2 ) + 8 ), CGFloat( y ), CGFloat( buttonWidth ), CGFloat(height))
 		nextButton.setTitle( "->" , forState: .Normal )
 		nextButton.setBackgroundImage( hiddenImage, forState: .Normal )
 		self.view.addSubview(nextButton)
 		
 		let prevButton = UIButton(type: UIButtonType.Custom) as UIButton
-		prevButton.frame = CGRectMake( CGFloat( x + 4 + width + 48 ), CGFloat( y ), CGFloat( 48 ), CGFloat(height))
+		prevButton.frame = CGRectMake( CGFloat( centerX - ( width / 2 ) - buttonWidth - 8  ), CGFloat( y ), CGFloat( buttonWidth ), CGFloat(height))
 		prevButton.setTitle( "<-" , forState: .Normal )
 		prevButton.setBackgroundImage( buttonImage, forState: .Normal )
 		prevButton.addTarget( self, action: #selector( self.backToMenu) , forControlEvents: .TouchUpInside)
 		self.view.addSubview(prevButton)
 
 		let level = Level.defaultLevels( levelHandler )[ currentLevel ]
-		let screenWidth = UIScreen.mainScreen().bounds.width
+
 		let levelTitle = UIButton(type: UIButtonType.Custom) as UIButton
 		levelTitle.frame = CGRectMake( CGFloat( x ), CGFloat( y - height - 2), CGFloat( screenWidth ), CGFloat( height ))
 		levelTitle.setTitle( level.levelName, forState: .Normal )
 		levelTitle.setBackgroundImage( hiddenImage, forState: .Normal )
 		levelTitle.userInteractionEnabled = false
-		//levelTitle.backgroundColor = UIColor(patternImage: UIImage(named: "winstone")!)
 		self.view.addSubview( levelTitle )
 	}
 	
@@ -249,10 +324,12 @@ class ViewController: UIViewController
 		if ( currentLevel >= Level.defaultLevels( levelHandler ).count )
 		{
 			print( "Game over!")
+			currentLevel = 0
+			backToMenu()
 			return
 		}
-		showingOverlay = false
 		gemCopy.removeAll()
+		showingOverlay = false
 		createGameView()
 	}
 	
@@ -295,11 +372,11 @@ class ViewController: UIViewController
         let totalSize = floor( screenWidth + screenHeight )
 		//fancy math to make the width and height of each gem be resized based on total number of gems on the level
         let gemSize = Int(totalSize) / Int( ( gemsPerRow ) * 3 )
+        //print( "Gem size: \(gemSize)")
 		
-        print( "Gem size: \(gemSize)")
         for index in 0..<maxGems
         {
-            let button   = UIButton(type: UIButtonType.Custom) as UIButton
+            let button = UIButton(type: UIButtonType.Custom) as UIButton
             let column = ( index % Int( gemsPerRow ) )
             let row = ( index / Int(gemsPerRow) )
             let x = Double( ( column  * gemSize )  ) + startX
@@ -487,18 +564,6 @@ class ViewController: UIViewController
 	//fires when a gem is clicked
     func clickGem( sender: AnyObject)
     {
-		//old code, inefficently checked every gem button for the one clicked
-		/*
-        for gem in self.allGems
-        {
-            if ( gem.gemButton == sender as! NSObject )
-            {
-                gem.changeImage()
-                break
-            }
-        }	
-		*/
-		
 		//if the level overlay is being shown then do not handle a click
 		if ( showingOverlay )
 		{
@@ -521,6 +586,8 @@ class ViewController: UIViewController
 	{
 		print( "Level won!")
 		timerView.userInteractionEnabled = false
+		let titleImage = UIImage( named: "hover" ) as UIImage?
+		timerView.setBackgroundImage( titleImage, forState: .Normal )
 		showingOverlay = true
 		showGemOverlay()
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "winstone")!)

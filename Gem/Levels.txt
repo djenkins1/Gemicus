@@ -7,8 +7,8 @@
 @cols
 	2
 @data
-	red		white
-	white	red
+	blue	white
+	blue	white
 #
 @name
 	Level 2
@@ -19,11 +19,11 @@
 @cols
 	2
 @data
-	blue	white
-	blue	white
+	red		white
+	white	red
 #
 @name
-	Level 3
+	Red Circle
 @author
 	Dilan Jenkins
 @rows
@@ -36,7 +36,7 @@
 	red		red		red
 #
 @name
-	Level 4
+	Blue X
 @author
 	Dilan Jenkins
 @rows
@@ -49,7 +49,7 @@
 	blue	white	blue
 #
 @name
-	Level 5
+	Yellow Cross
 @author
 	Dilan Jenkins
 @rows
@@ -60,4 +60,45 @@
 	blue	yellow	blue
 	yellow	yellow	yellow
 	blue	yellow	blue
+#
+@name
+	The T
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	red		red		red
+	white	red		white
+	white	red		white
+#
+@name
+	Always Blue
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	blue	blue		blue
+	blue	blue		blue
+	blue	blue		blue
+#
+@name
+	Green Corners
+@author
+	Dilan Jenkins
+@rows
+	5
+@cols
+	5
+@data
+	green	green	white	green	green
+	green	white	red		white	green
+	white	red		red		red		white
+	green	white	red		white	green
+	green	green	white	green	green
 #
