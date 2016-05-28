@@ -39,22 +39,27 @@
 //(DONE)only enable to back button/all levels button when the overlay is being shown
 //(DONE)clicking on level title should bring you too all levels view
 //(DONE)add title for levels view like in game board
+//(SCRAP)rewrite code to allow for non-square boards
+//(DONE)maybe have gems centered in view
+//(DONE)levels should be centered as well in the all levels view
 //
 //views
 //      (DONE)menu
 //      (DONE)all levels view
 //      (DONE)credits view, with artists who created artwork
-//      level editor view, would need to get size of board from user somehow(maybe allow dynamic resizing?)
 //		help/info view. Maybe have a tutorial?
 //
-//rewrite code to allow for non-square boards
-//maybe have gems centered in view
-//		if gems get centered, levels should as well in all levels view
 //different app icon then default
 //change link for myself in credits file
+//maybe have back buttons with actual back sign in levels/credits view
+//		done in credits view, still needed in levels view
+//try to make the font size for the credits bigger based on the screen size?
+//music for app, along with mute button in gui
+//random gems embedded into square tiles on menu
 //
 //future ideas
 //      (*)level editor, can save levels to own device or share with others via Gem Server
+//		(*)level editor view, would need to get size of board from user somehow(maybe allow dynamic resizing?)
 //		(*)rating system for each created/default level, posts to Gem Server. Allow rating on score screen
 //		change arrows on prev/next buttons to actual images?
 //			also maybe have enabled arrow images for when the buttons are actually clickable
@@ -173,7 +178,6 @@ class ViewController: UIViewController
 		self.view.addSubview(infoButton)
 		self.view.addSubview(credButton)
 		
-		
 		//playButton.addTarget( self, action: #selector( self.toggleOverlay) , forControlEvents: .TouchUpInside)
 		playButton.addTarget( self, action: #selector( self.gotoNextLevel) , forControlEvents: .TouchUpInside)
 		levelButton.addTarget( self, action: #selector( self.gotoLevelsView) , forControlEvents: .TouchUpInside)
@@ -181,6 +185,7 @@ class ViewController: UIViewController
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
 	}
 	
+	//creates the view for the credits
 	func createCreditsView()
 	{
 		let screenWidth = UIScreen.mainScreen().bounds.width
@@ -192,12 +197,22 @@ class ViewController: UIViewController
 		let defaultHeight = 32
 		let roomTitle = UIButton(type: UIButtonType.Custom) as UIButton
 		let titleImage = UIImage( named: "title" ) as UIImage?
+		let backButton = UIButton(type: UIButtonType.Custom) as UIButton
 		roomTitle.setBackgroundImage( titleImage, forState: .Normal )
 		roomTitle.setTitle( "Credits" , forState: .Normal )
 		roomTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		roomTitle.frame = CGRectMake( CGFloat( centerX - CGFloat( titleWidth / 2 ) ), CGFloat( startY ), CGFloat( titleWidth ), CGFloat(defaultHeight ))
 		roomTitle.addTarget( self, action: #selector( self.backToMenu ) , forControlEvents: .TouchUpInside)
+		
+		let buttonImage = UIImage( named: "button" ) as UIImage?
+		backButton.setBackgroundImage( buttonImage, forState: .Normal )
+		backButton.setTitle( "<-" , forState: .Normal )
+		backButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
+		let backWidthCenter = ( defaultHeight / 2 )
+		backButton.frame = CGRectMake( CGFloat( centerX - CGFloat( titleWidth / 2 ) - CGFloat( padding + backWidthCenter ) ), CGFloat( startY ), CGFloat( defaultHeight ), CGFloat(defaultHeight ))
+		backButton.addTarget( self, action: #selector( self.backToMenu ) , forControlEvents: .TouchUpInside)
 		self.view.addSubview(roomTitle)
+		self.view.addSubview(backButton)
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
 		
 		let allCredits = readCredits()
@@ -212,7 +227,7 @@ class ViewController: UIViewController
 			button.setTitle( "\(title) - \(author)" , forState: .Normal )
 			button.setTitleColor( UIColor.blackColor(), forState: .Normal)
 			button.setBackgroundImage( titleImage, forState: .Normal )
-			button.titleLabel!.font = button.titleLabel!.font.fontWithSize( 6 )
+			button.titleLabel!.font = button.titleLabel!.font.fontWithSize( 7 )
 			button.tag = index - 1
 			button.addTarget( self, action: #selector( self.clickCreditsTag(_:)) , forControlEvents: .TouchUpInside)
 			//button.titleLabel!.adjustsFontSizeToFitWidth = true
@@ -220,6 +235,7 @@ class ViewController: UIViewController
 		}
 	}
 	
+	//handler to goto the levels view
 	func gotoLevelsView()
 	{
 		currentLevel = 0
@@ -227,6 +243,7 @@ class ViewController: UIViewController
 		createLevelsView()
 	}
 	
+	//handler to goto the credits view
 	func gotoCreditsView()
 	{
 		currentLevel = 0
@@ -234,6 +251,7 @@ class ViewController: UIViewController
 		createCreditsView()
 	}
 	
+	//creates the game view
 	func createGameView()
 	{
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "stone")!)
@@ -245,9 +263,9 @@ class ViewController: UIViewController
 		timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(self.updateTime), userInfo: nil, repeats: true)
 	}
 	
+	//creates the levels view
 	func createLevelsView()
 	{
-		//NEED A WAY TO GET BACK TO MENU FROM HERE
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
 		var index = -1
 		let totalLevels = Level.defaultLevels(levelHandler).count
@@ -256,14 +274,14 @@ class ViewController: UIViewController
 		let screenWidth = screenSize.width * 0.8
 		let screenHeight = screenSize.height * 0.8
 		//let the padding to the left of the gem board be based on the width of the screen
-		let startX = floor( Double( screenSize.width * 0.15 ) )
+		//let startX = floor( Double( screenSize.width * 0.15 ) )
 		//let the top left corner of the game board be based on the height of the screen
 		let startY = floor( Double( screenSize.height * 0.2 ))
 		let totalSize = floor( screenWidth + screenHeight )
 		let squareSize = Int(totalSize) / Int( ( perRow ) * 4 )
 		let backImage = UIImage( named: "button" ) as UIImage?
 		let titleImage = UIImage( named: "title" ) as UIImage?
-		let paddingWidth = screenWidth * 0.02
+		//let paddingWidth = screenWidth * 0.02
 		let paddingHeight = screenHeight * 0.02
 		
 		let roomTitle = UIButton(type: UIButtonType.Custom) as UIButton
@@ -273,14 +291,15 @@ class ViewController: UIViewController
 		roomTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		roomTitle.addTarget( self, action: #selector( self.backToMenu ) , forControlEvents: .TouchUpInside)
 		self.view.addSubview( roomTitle )
-		
+		//	func centerBoxPosition( boxesPerRow: Int, index: Int, boxWidth: Int ) -> Int
 		for _ in Level.defaultLevels( levelHandler )
 		{
 			index = index + 1
 			let levelButton = UIButton(type: UIButtonType.Custom) as UIButton
 			let column = ( index % Int( perRow ) )
 			let row = ( index / Int(perRow) )
-			let x = Double( ( CGFloat(column)  * (CGFloat( squareSize ) + paddingWidth ) )  ) + startX
+			//let x = Double( ( CGFloat(column)  * (CGFloat( squareSize ) + paddingWidth ) )  ) + startX
+			let x = centerBoxPosition(Int(perRow), index: column, boxWidth: squareSize )
 			let y = Double( ( CGFloat(row)  * (CGFloat( squareSize ) + paddingHeight ) )  ) + startY
 			levelButton.frame = CGRectMake( CGFloat( x ), CGFloat( y ), CGFloat( squareSize ), CGFloat(squareSize))
 			levelButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
@@ -291,6 +310,7 @@ class ViewController: UIViewController
 		}
 	}
 	
+	//when a credits button is clicked on in credits view, show the web page link associated with that button
 	func clickCreditsTag( sender: AnyObject )
 	{
 		let allCredits = readCredits()
@@ -301,6 +321,7 @@ class ViewController: UIViewController
 		}
 	}
 	
+	//when a level button is clicked on in the levels view, goto that specific level
 	func clickLevelButton( sender: AnyObject )
 	{
 		let button = sender as! UIButton
@@ -378,6 +399,7 @@ class ViewController: UIViewController
 		self.view.addSubview( levelTitle )
 	}
 	
+	//go back to the menu
 	func backToMenu()
 	{
 		currentLevel = currentLevel - 1
@@ -398,6 +420,7 @@ class ViewController: UIViewController
 		}
 	}
 	
+	//reset everything that is associated with the current game board
 	func clearBoardData()
 	{
 		allGems.removeAll()
@@ -453,7 +476,7 @@ class ViewController: UIViewController
         let screenWidth = screenSize.width * 0.8
         let screenHeight = screenSize.height * 0.8
 		//let the padding to the left of the gem board be based on the width of the screen
-        let startX = floor( Double( screenSize.width * 0.15 ) )
+        //let startX = floor( Double( screenSize.width * 0.15 ) )
 		//let the top left corner of the game board be based on the height of the screen
         let startY = floor( Double( screenSize.height * 0.2 ))
 		
@@ -468,7 +491,8 @@ class ViewController: UIViewController
             let button = UIButton(type: UIButtonType.Custom) as UIButton
             let column = ( index % Int( gemsPerRow ) )
             let row = ( index / Int(gemsPerRow) )
-            let x = Double( ( column  * gemSize )  ) + startX
+            //let x = Double( ( column  * gemSize )  ) + startX
+			let x = centerBoxPosition( Int(gemsPerRow), index: column, boxWidth: gemSize )
             let y = Double( ( row * gemSize )  ) + startY
             button.frame = CGRectMake( CGFloat( x ), CGFloat( y ), CGFloat( gemSize ), CGFloat(gemSize))
             self.view.addSubview(button)
@@ -476,6 +500,27 @@ class ViewController: UIViewController
             allGems.append( Gem( gemButton: button, currentSprite: 0).randomImage() )
         }
     }
+	
+	//returns the position of the box so that it is centered in the view based on its position in the row
+	func centerBoxPosition( boxesPerRow: Int, index: Int, boxWidth: Int ) -> Int
+	{
+		let screenSize: CGRect = UIScreen.mainScreen().bounds
+		let screenWidth = Int( floor( screenSize.width * 0.5 ) )
+		var toReturn = 0
+		let invert = ( boxesPerRow - 1 ) - index
+		let dist = invert - ( boxesPerRow / 2 )
+		let totalOffset = dist * boxWidth
+		if ( boxesPerRow % 2 == 0 )
+		{
+			toReturn = screenWidth - totalOffset - boxWidth
+		}
+		else
+		{
+			toReturn = screenWidth - totalOffset - (boxWidth / 2)
+		}
+		
+		return toReturn
+	}
 	
 	//shows the level overlay and changes every gem to its winning color
 	func showGemOverlay()
@@ -711,6 +756,7 @@ class ViewController: UIViewController
 		}
 	}
 	
+	//reads the credits data from the credits file and returns a dictionary of it
 	func readCredits() -> Array<Dictionary<String,String>>
 	{
 		var toReturn = [[String: String]]()

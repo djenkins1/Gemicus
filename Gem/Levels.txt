@@ -88,6 +88,20 @@
 	blue	blue		blue
 #
 @name
+	Purple Box
+@author
+	Dilan Jenkins
+@rows
+	4
+@cols
+	4
+@data
+	purple	purple	purple	purple
+	purple	black	black	purple
+	purple	black	black	purple
+	purple	purple	purple	purple
+#
+@name
 	Green Corners
 @author
 	Dilan Jenkins
