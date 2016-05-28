@@ -31,6 +31,11 @@ class Process
 		return populateLevels( objects )
 	}
 	
+	func getObjects() -> Array<Dictionary<String,String>>
+	{
+		return breakDictionary( breakObjects( input ) )
+	}
+	
 	func breakObjects( myInput : String ) -> Array<String>
 	{
 		var toReturn = [String]()
@@ -60,51 +65,7 @@ class Process
 		var toReturn = [Level]()
 		for objStr in objects
 		{
-			var newString = objStr.stringByReplacingOccurrencesOfString("\n", withString: " ")
-			newString = newString.stringByReplacingOccurrencesOfString("\t", withString: " ")
-			let tokens = newString.componentsSeparatedByString(" ")
-			var seperator = ""
-			var currentAttr = ""
-			var currentValue = ""
-			var objDict = [ String : String ]()
-			var index = -1
-			for token in tokens
-			{
-				index = index + 1
-				if token == ""
-				{
-					if ( index != tokens.count - 1 )
-					{
-						continue
-					}
-					else
-					{
-						objDict[ currentAttr ] = currentValue
-						break
-					}
-				}
-				
-				if token[ token.startIndex ] == Character( "@" )
-				{
-					if ( currentAttr != "" )
-					{
-						objDict[ currentAttr ] = currentValue
-						currentValue = ""
-						seperator = ""
-						currentAttr = token.substringFromIndex( token.startIndex.successor() )
-					}
-					else
-					{
-						currentAttr = token.substringFromIndex( token.startIndex.successor() )
-					}
-				}
-				else
-				{
-					currentValue = currentValue + seperator + token
-					seperator = " "
-				}
-			}
-			
+			var objDict = addTokensToDict( objStr)
 			var dataValues = [Int]()
 			let splitData = objDict[ "data"]!.componentsSeparatedByString(" ")
 			for value in splitData
@@ -128,39 +89,66 @@ class Process
 		}
 		return toReturn
 	}
-	
-	//@text marks a field, all text after that line until another @field or until # is part of that fields value
-	//# marks end of object
-	//remove tabs/spaces/empty lines
-	
-	//break the string up into each object's string based on end tags
-	//for each object, break up the string into its field strings based on @text
-	
-	/*
-	func processOn( delimiter : Character, readUntilFound : Bool ) -> Array<String>
+
+	func addTokensToDict( objStr : String ) -> Dictionary<String,String>
 	{
-		var toReturn = [String]()
-		var current = ""
-		for i in input.characters
+		var objDict = [ String : String ]()
+		var newString = objStr.stringByReplacingOccurrencesOfString("\n", withString: " ")
+		newString = newString.stringByReplacingOccurrencesOfString("\t", withString: " ")
+		let tokens = newString.componentsSeparatedByString(" ")
+		var seperator = ""
+		var currentAttr = ""
+		var currentValue = ""
+		var index = -1
+		for token in tokens
 		{
-			if i == delimiter
+			index = index + 1
+			if token == ""
 			{
-				//if readUntilFound then every delimiter found creates a new string
-			}
-			else
-			{
-				if ( readUntilFound)
+				if ( index != tokens.count - 1 )
 				{
-						
+					continue
 				}
 				else
 				{
-					
+					objDict[ currentAttr ] = currentValue
+					break
 				}
+			}
+			
+			if token[ token.startIndex ] == Character( "@" )
+			{
+				if ( currentAttr != "" )
+				{
+					objDict[ currentAttr ] = currentValue
+					currentValue = ""
+					seperator = ""
+					currentAttr = token.substringFromIndex( token.startIndex.successor() )
+				}
+				else
+				{
+					currentAttr = token.substringFromIndex( token.startIndex.successor() )
+				}
+			}
+			else
+			{
+				currentValue = currentValue + seperator + token
+				seperator = " "
 			}
 		}
 		
-		return toReturn
+		return objDict
 	}
-	*/
+	
+	func breakDictionary( objects: Array<String> ) -> Array<Dictionary<String,String>>
+	{
+		var toReturn = [[String: String]]()
+		for objStr in objects
+		{
+			toReturn.append( addTokensToDict( objStr ) )
+		}
+		return toReturn
+		
+	}
+	
 }
