@@ -42,6 +42,11 @@
 //(SCRAP)rewrite code to allow for non-square boards
 //(DONE)maybe have gems centered in view
 //(DONE)levels should be centered as well in the all levels view
+//(DONE)maybe have back buttons with actual back sign in levels/credits view
+//(DONE)change link for myself in credits file, github site
+//(DONE)try to make the font size for the credits bigger
+//(DONE)animations for gems being pressed
+//(DONE)different app icon then default
 //
 //views
 //      (DONE)menu
@@ -49,13 +54,13 @@
 //      (DONE)credits view, with artists who created artwork
 //		help/info view. Maybe have a tutorial?
 //
-//different app icon then default
-//change link for myself in credits file
-//maybe have back buttons with actual back sign in levels/credits view
-//		done in credits view, still needed in levels view
-//try to make the font size for the credits bigger based on the screen size?
+//maybe update the icon so that it has a different color background then black
 //music for app, along with mute button in gui
-//random gems embedded into square tiles on menu
+//(???)random gems embedded into square tiles on menu
+//some kind of indicator to the player that they have won the level
+//		animation for winning the level
+//random glint animations for gems
+//add animations for other buttons, i.e menuButtons...
 //
 //future ideas
 //      (*)level editor, can save levels to own device or share with others via Gem Server
@@ -64,10 +69,7 @@
 //		change arrows on prev/next buttons to actual images?
 //			also maybe have enabled arrow images for when the buttons are actually clickable
 //      search created levels by author,title...
-//      animations for gems being pressed
-//      random glint animations for gems
 //      hint animations for gems that are not winning color
-//		animation for winning the level, and maybe a score screen
 //		if level button size gets below certain amount put multiple pages on all levels view
 //		longer swipes should do multiple swaps of gems if possible
 //			see bookmarks, have stack overflow answer that could work here
@@ -158,7 +160,6 @@ class ViewController: UIViewController
 		credButton.setBackgroundImage( backImage, forState: .Normal )
 		levelButton.setBackgroundImage( backImage, forState: .Normal )
 		
-		//isbeauty.setTitleColor(UIColorFromRGB("F21B3F"), forState: .Normal)
 		gameTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		playButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		infoButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
@@ -178,6 +179,31 @@ class ViewController: UIViewController
 		self.view.addSubview(infoButton)
 		self.view.addSubview(credButton)
 		
+		/*
+		//background is 96x96 square tiles
+		let totalGems = Int(ceil(UIScreen.mainScreen().bounds.width * UIScreen.mainScreen().bounds.height) / CGFloat(96 * 96))
+		let gemSize = 24
+		let gemsPerRow = Int(ceil(UIScreen.mainScreen().bounds.width / CGFloat(96) ))
+		
+		for index in 0..<totalGems
+		{
+			if arc4random_uniform(5) > 2
+			{
+				continue
+			}
+			
+			let myCol = index % gemsPerRow
+			let myRow = index / gemsPerRow
+			let xPos = ( myCol * 96 ) - 48 - ( gemSize / 2 )
+			let yPos = ( myRow * 96 ) - 48 - ( gemSize / 2 )
+
+			let imageView = UIImageView(image: UIImage(named: "jewel0")!)
+			imageView.frame = CGRect(x: xPos, y: yPos, width: gemSize, height: gemSize)
+			self.view.addSubview( imageView )
+			self.view.sendSubviewToBack( imageView )
+			
+		}
+		*/
 		//playButton.addTarget( self, action: #selector( self.toggleOverlay) , forControlEvents: .TouchUpInside)
 		playButton.addTarget( self, action: #selector( self.gotoNextLevel) , forControlEvents: .TouchUpInside)
 		levelButton.addTarget( self, action: #selector( self.gotoLevelsView) , forControlEvents: .TouchUpInside)
@@ -211,8 +237,9 @@ class ViewController: UIViewController
 		let backWidthCenter = ( defaultHeight / 2 )
 		backButton.frame = CGRectMake( CGFloat( centerX - CGFloat( titleWidth / 2 ) - CGFloat( padding + backWidthCenter ) ), CGFloat( startY ), CGFloat( defaultHeight ), CGFloat(defaultHeight ))
 		backButton.addTarget( self, action: #selector( self.backToMenu ) , forControlEvents: .TouchUpInside)
-		self.view.addSubview(roomTitle)
 		self.view.addSubview(backButton)
+		self.view.addSubview(roomTitle)
+
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
 		
 		let allCredits = readCredits()
@@ -227,13 +254,43 @@ class ViewController: UIViewController
 			button.setTitle( "\(title) - \(author)" , forState: .Normal )
 			button.setTitleColor( UIColor.blackColor(), forState: .Normal)
 			button.setBackgroundImage( titleImage, forState: .Normal )
-			button.titleLabel!.font = button.titleLabel!.font.fontWithSize( 7 )
+			button.titleLabel!.font = button.titleLabel!.font.fontWithSize( 10 )
 			button.tag = index - 1
 			button.addTarget( self, action: #selector( self.clickCreditsTag(_:)) , forControlEvents: .TouchUpInside)
 			//button.titleLabel!.adjustsFontSizeToFitWidth = true
 			self.view.addSubview(button)
 		}
 	}
+	
+	//===========================================================
+	//===========================================================
+	//===========================================================
+	//===========================================================
+	//===========================================================
+	//TODO:
+	//===========================================================
+	//===========================================================
+	//===========================================================
+	//===========================================================
+	//===========================================================
+	func createTutorialView()
+	{
+		//swipe the gems in the direction you want to swap them
+		//tap the gems to change their color
+		//get the gems to match the pattern given
+		//tap the clock to look at the pattern again, pauses game
+	}
+	//===========================================================
+	//===========================================================
+	//===========================================================
+	//===========================================================
+	//===========================================================
+	//TODO ABOVE: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	//===========================================================
+	//===========================================================
+	//===========================================================
+	//===========================================================
+	//===========================================================
 	
 	//handler to goto the levels view
 	func gotoLevelsView()
@@ -281,11 +338,25 @@ class ViewController: UIViewController
 		let squareSize = Int(totalSize) / Int( ( perRow ) * 4 )
 		let backImage = UIImage( named: "button" ) as UIImage?
 		let titleImage = UIImage( named: "title" ) as UIImage?
+		let defaultHeight = 32
 		//let paddingWidth = screenWidth * 0.02
 		let paddingHeight = screenHeight * 0.02
 		
+		let centerX = UIScreen.mainScreen().bounds.width / 2
+		let titleWidth = 128
+		let buttonImage = UIImage( named: "button" ) as UIImage?
+		let backButton = UIButton(type: UIButtonType.Custom) as UIButton
+		backButton.setBackgroundImage( buttonImage, forState: .Normal )
+		backButton.setTitle( "<-" , forState: .Normal )
+		backButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
+		let backWidthCenter = ( defaultHeight / 2 )
+		let padding = Int( ceil( UIScreen.mainScreen().bounds.height * 0.04 ) )
+		backButton.frame = CGRectMake( CGFloat( centerX - CGFloat( titleWidth / 2 ) - CGFloat( padding + backWidthCenter ) ), CGFloat( startY - 48 ), CGFloat( defaultHeight ), CGFloat(defaultHeight ))
+		backButton.addTarget( self, action: #selector( self.backToMenu ) , forControlEvents: .TouchUpInside)
+		self.view.addSubview(backButton)
+		
 		let roomTitle = UIButton(type: UIButtonType.Custom) as UIButton
-		roomTitle.frame = CGRectMake( CGFloat( (screenSize.width / 2) - CGFloat( 128 / 2 ) ), CGFloat( startY -  48 ), CGFloat( 128 ), CGFloat(32))
+		roomTitle.frame = CGRectMake( CGFloat( (screenSize.width / 2) - CGFloat( titleWidth / 2 ) ), CGFloat( startY -  48 ), CGFloat( titleWidth ), CGFloat(defaultHeight ))
 		roomTitle.setBackgroundImage( titleImage, forState: .Normal )
 		roomTitle.setTitle( "Levels" , forState: .Normal )
 		roomTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
@@ -630,6 +701,23 @@ class ViewController: UIViewController
 		{
 				return
 		}
+		
+		UIView.animateWithDuration(0.3 ,
+			animations:
+			{
+				self.allGems[ firstIndex ].gemButton.transform = CGAffineTransformMakeScale(0.9, 0.9)
+				self.allGems[ secondIndex].gemButton.transform = CGAffineTransformMakeScale(0.9, 0.9)
+			},
+			completion:
+			{
+				finish in
+				UIView.animateWithDuration(0.3)
+				{
+					self.allGems[ firstIndex ].gemButton.transform = CGAffineTransformIdentity
+					self.allGems[secondIndex].gemButton.transform = CGAffineTransformIdentity
+				}
+			}
+		)
 		let saveSprite = allGems[ firstIndex ].currentSprite
 		allGems[ firstIndex ].updateSprite( allGems[ secondIndex ].currentSprite )
 		allGems[ secondIndex ].updateSprite( saveSprite )
@@ -710,6 +798,20 @@ class ViewController: UIViewController
 				return
 		}
 		
+		UIView.animateWithDuration(0.25, animations:{
+			(sender as! UIButton).transform = CGAffineTransformMakeRotation(CGFloat(M_PI))
+			}
+			
+			,completion:
+			{
+				finish in
+				UIView.animateWithDuration(0.0)
+				{
+					(sender as! UIButton).transform = CGAffineTransformIdentity
+				}
+			}
+		)
+		
 		//get the gem object pertaining to the button that was clicked and increment its sprite to next color
 		let index = gemDict[ sender as! UIButton ]
 		allGems[ index! ].changeImage()
@@ -719,6 +821,7 @@ class ViewController: UIViewController
 		{
 			endLevelWon()
 		}
+		
     }
 	
 	//handles the level being won, shows an overlay
