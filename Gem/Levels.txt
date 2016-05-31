@@ -128,8 +128,8 @@
 	black	black	black	black	black
 	black	white	black	white	black
 	black	black	black	black	black
-	black	white	black	white	black
 	black	white	white	white	black
+	black	black	black	black	black
 #
 @name
 	Arizona

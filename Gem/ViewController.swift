@@ -47,20 +47,25 @@
 //(DONE)try to make the font size for the credits bigger
 //(DONE)animations for gems being pressed
 //(DONE)different app icon then default
-//
-//views
+//(SCRAP)random gems embedded into square tiles on menu
+//(DONE)views
 //      (DONE)menu
 //      (DONE)all levels view
 //      (DONE)credits view, with artists who created artwork
-//		help/info view. Maybe have a tutorial?
+//		(DONE)help/info view. Maybe have a tutorial?
 //
+//should advance the tutorial past 0 when the timer button first pressed
 //maybe update the icon so that it has a different color background then black
-//music for app, along with mute button in gui
-//(???)random gems embedded into square tiles on menu
+//mute button for muting the music
+//should wrap around to first song in playlist when done, or randomize it?
+//randomize the song listings
+//figure out way to play ogg files or convert them?
+//
 //some kind of indicator to the player that they have won the level
 //		animation for winning the level
-//random glint animations for gems
+//(?)random glint animations for gems
 //add animations for other buttons, i.e menuButtons...
+//change credits so that two buttons per row instead of one?
 //
 //future ideas
 //      (*)level editor, can save levels to own device or share with others via Gem Server
@@ -84,6 +89,7 @@
 //			have level pack named ipad that has larger boards
 
 import UIKit
+import AVFoundation
 
 class ViewController: UIViewController
 {
@@ -105,6 +111,9 @@ class ViewController: UIViewController
 	//a button that when pushed goes back to menu
 	var prevButton: UIButton!
 	
+	//a button that shows the tutorial text
+	var tutorView: UIButton!
+	
 	//a dictionary for showing which button corresponds to which index in allGems
 	var gemDict = [UIButton : Int]()
 	
@@ -120,13 +129,40 @@ class ViewController: UIViewController
 	
 	//stores the data for the default levels
 	var levelHandler: LevelHandler!
+	
+	//if currently showing the tutorial then this is true
+	var showingTutorial = false
+	
+	var musicPlayer :AVQueuePlayer!
 
     override func viewDidLoad()
     {
         super.viewDidLoad()
 		readLevels()
+		playMusic()
 		createMenuView()
+		
     }
+	
+	func playMusic()
+	{
+		musicPlayer = AVQueuePlayer( items: getMusic() )
+		musicPlayer.play()
+	}
+	
+	func getMusic() -> Array<AVPlayerItem>
+	{
+		var toReturn = [AVPlayerItem]()
+		//need to figure out how to play ogg files
+		let strDict = [ "DesertOfDreams" : "mp3" , "TempleMystics" : "wav" ]
+		for (key,value) in strDict
+		{
+			let urlPath = NSBundle.mainBundle().pathForResource(key, ofType: value )
+			let fileURL = NSURL(fileURLWithPath:urlPath!)
+			toReturn.append( AVPlayerItem(URL:fileURL) )
+		}
+		return toReturn
+	}
 	
 	//deletes all current elements in the view and makes the menu GUI
 	func createMenuView()
@@ -208,6 +244,7 @@ class ViewController: UIViewController
 		playButton.addTarget( self, action: #selector( self.gotoNextLevel) , forControlEvents: .TouchUpInside)
 		levelButton.addTarget( self, action: #selector( self.gotoLevelsView) , forControlEvents: .TouchUpInside)
 		credButton.addTarget( self, action: #selector( self.gotoCreditsView) , forControlEvents: .TouchUpInside)
+		infoButton.addTarget( self, action: #selector( self.gotoHelpView) , forControlEvents: .TouchUpInside)
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
 	}
 	
@@ -262,36 +299,62 @@ class ViewController: UIViewController
 		}
 	}
 	
-	//===========================================================
-	//===========================================================
-	//===========================================================
-	//===========================================================
-	//===========================================================
-	//TODO:
-	//===========================================================
-	//===========================================================
-	//===========================================================
-	//===========================================================
-	//===========================================================
+	//creates the dialog box at the bottom of the screen for the tutorial text
 	func createTutorialView()
 	{
-		//swipe the gems in the direction you want to swap them
-		//tap the gems to change their color
-		//get the gems to match the pattern given
-		//tap the clock to look at the pattern again, pauses game
+		let screenWidth = UIScreen.mainScreen().bounds.width
+		let screenHeight = UIScreen.mainScreen().bounds.height
+		let buttonImage = UIImage( named: "title" ) as UIImage?
+		tutorView = UIButton(type: UIButtonType.Custom) as UIButton
+		tutorView.setBackgroundImage( buttonImage, forState: .Normal )
+		tutorView.tag = 0
+		tutorView.setTitle( getTutorialText( 0 ) , forState: .Normal )
+		//tutorView.titleLabel?.lineBreakMode = .ByWordWrapping
+		//tutorView.titleLabel?.adjustsFontSizeToFitWidth = true
+		tutorView.titleLabel?.numberOfLines = 0
+		tutorView.contentEdgeInsets = UIEdgeInsetsMake(12,12,12,12)
+		tutorView.setTitleColor( .blackColor(), forState: .Normal)
+		//tutorView.userInteractionEnabled = false
+		tutorView.addTarget( self, action: #selector( self.clickTutorialDialog(_:)) , forControlEvents: .TouchUpInside)
+		let myHeight = screenHeight * 0.12
+		tutorView.frame = CGRectMake( 0, CGFloat( screenHeight * 0.85 ), CGFloat( screenWidth ), CGFloat( myHeight ))
+		self.view.addSubview( tutorView )
 	}
-	//===========================================================
-	//===========================================================
-	//===========================================================
-	//===========================================================
-	//===========================================================
-	//TODO ABOVE: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-	//===========================================================
-	//===========================================================
-	//===========================================================
-	//===========================================================
-	//===========================================================
 	
+	func clickTutorialDialog( sender: AnyObject )
+	{
+		//advance the tag along and change the text to the new tag
+		(sender as! UIButton).tag += 1
+		let newText = getTutorialText( (sender as! UIButton).tag )
+		if newText == ""
+		{
+			showingTutorial = false
+			//delete the tutorial view
+			(sender as! UIButton).setTitle( newText, forState: .Normal )
+			(sender as! UIButton).userInteractionEnabled = false
+			(sender as! UIButton).hidden = true
+			
+		}
+		else
+		{
+			(sender as! UIButton).setTitle( newText, forState: .Normal )
+		}
+	}
+	
+	//returns the help text associated with the index given
+	func getTutorialText( index: Int ) -> String
+	{
+		var myTutorials = [String]()
+		myTutorials.append( "Try to get the gems to match the pattern given. Tap the timer to start. (Continue)" )
+		myTutorials.append( "Swipe the gems in the direction you want to swap them. Tap them to change their color. (Continue)" )
+		myTutorials.append( "If you need to look at the pattern again, then tap the timer. (Done)" )
+		if index < 0 || index >= myTutorials.count
+		{
+			return ""
+		}
+		return myTutorials[ index ]
+	}
+
 	//handler to goto the levels view
 	func gotoLevelsView()
 	{
@@ -318,6 +381,10 @@ class ViewController: UIViewController
 		addGemPressEvents()
 		showGemOverlay()
 		timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(self.updateTime), userInfo: nil, repeats: true)
+		if ( showingTutorial )
+		{
+				createTutorialView()
+		}
 	}
 	
 	//creates the levels view
@@ -514,6 +581,12 @@ class ViewController: UIViewController
 		gemCopy.removeAll()
 		showingOverlay = false
 		createGameView()
+	}
+	
+	func gotoHelpView()
+	{
+		showingTutorial = true
+		gotoNextLevel()
 	}
 	
 	//returns true if the current game board is the winning board or false otherwise
