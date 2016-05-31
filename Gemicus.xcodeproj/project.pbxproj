@@ -7,10 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FE2CCB2D1CFD092200766C71 /* caravan.ogg in Resources */ = {isa = PBXBuildFile; fileRef = FE2CCB291CFD092200766C71 /* caravan.ogg */; };
-		FE2CCB2E1CFD092200766C71 /* DesertOfDreams.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FE2CCB2A1CFD092200766C71 /* DesertOfDreams.mp3 */; };
-		FE2CCB2F1CFD092200766C71 /* TempleMystics.wav in Resources */ = {isa = PBXBuildFile; fileRef = FE2CCB2B1CFD092200766C71 /* TempleMystics.wav */; };
-		FE2CCB301CFD092200766C71 /* v312.ogg in Resources */ = {isa = PBXBuildFile; fileRef = FE2CCB2C1CFD092200766C71 /* v312.ogg */; };
 		FE4375FB1CF82C3800491F4E /* Credits.txt in Resources */ = {isa = PBXBuildFile; fileRef = FE4375FA1CF82C3800491F4E /* Credits.txt */; };
 		FE86C4641CF6DAE40063DE14 /* LevelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE86C4631CF6DAE40063DE14 /* LevelHandler.swift */; };
 		FEBCA9291CF6861000A419E7 /* Levels.txt in Resources */ = {isa = PBXBuildFile; fileRef = FEBCA9281CF6861000A419E7 /* Levels.txt */; };
@@ -23,13 +19,13 @@
 		FEFB29F01CF3A46D002B2BAF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FEFB29EE1CF3A46D002B2BAF /* Main.storyboard */; };
 		FEFB29F21CF3A46D002B2BAF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FEFB29F11CF3A46D002B2BAF /* Assets.xcassets */; };
 		FEFB29F51CF3A46D002B2BAF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FEFB29F31CF3A46D002B2BAF /* LaunchScreen.storyboard */; };
+		FEFD25301CFD6E90002B74EA /* caravan.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FEFD252D1CFD6E90002B74EA /* caravan.mp3 */; };
+		FEFD25311CFD6E90002B74EA /* Egypt.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FEFD252E1CFD6E90002B74EA /* Egypt.mp3 */; };
+		FEFD25321CFD6E90002B74EA /* Temple.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FEFD252F1CFD6E90002B74EA /* Temple.mp3 */; };
+		FEFD25341CFD6E9D002B74EA /* DesertOfDreams.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FEFD25331CFD6E9D002B74EA /* DesertOfDreams.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		FE2CCB291CFD092200766C71 /* caravan.ogg */ = {isa = PBXFileReference; lastKnownFileType = file; name = caravan.ogg; path = ../../../../Downloads/caravan.ogg; sourceTree = "<group>"; };
-		FE2CCB2A1CFD092200766C71 /* DesertOfDreams.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = DesertOfDreams.mp3; path = ../../../../Downloads/DesertOfDreams.mp3; sourceTree = "<group>"; };
-		FE2CCB2B1CFD092200766C71 /* TempleMystics.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = TempleMystics.wav; path = ../../../../Downloads/TempleMystics.wav; sourceTree = "<group>"; };
-		FE2CCB2C1CFD092200766C71 /* v312.ogg */ = {isa = PBXFileReference; lastKnownFileType = file; name = v312.ogg; path = ../../../../Downloads/v312.ogg; sourceTree = "<group>"; };
 		FE4375FA1CF82C3800491F4E /* Credits.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Credits.txt; sourceTree = "<group>"; };
 		FE86C4631CF6DAE40063DE14 /* LevelHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelHandler.swift; sourceTree = "<group>"; };
 		FEBCA9281CF6861000A419E7 /* Levels.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Levels.txt; sourceTree = "<group>"; };
@@ -44,6 +40,10 @@
 		FEFB29F11CF3A46D002B2BAF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FEFB29F41CF3A46D002B2BAF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FEFB29F61CF3A46D002B2BAF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FEFD252D1CFD6E90002B74EA /* caravan.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = caravan.mp3; sourceTree = "<group>"; };
+		FEFD252E1CFD6E90002B74EA /* Egypt.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Egypt.mp3; sourceTree = "<group>"; };
+		FEFD252F1CFD6E90002B74EA /* Temple.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Temple.mp3; sourceTree = "<group>"; };
+		FEFD25331CFD6E9D002B74EA /* DesertOfDreams.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = DesertOfDreams.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,10 +76,10 @@
 		FEFB29E91CF3A46D002B2BAF /* Gem */ = {
 			isa = PBXGroup;
 			children = (
-				FE2CCB291CFD092200766C71 /* caravan.ogg */,
-				FE2CCB2A1CFD092200766C71 /* DesertOfDreams.mp3 */,
-				FE2CCB2B1CFD092200766C71 /* TempleMystics.wav */,
-				FE2CCB2C1CFD092200766C71 /* v312.ogg */,
+				FEFD252D1CFD6E90002B74EA /* caravan.mp3 */,
+				FEFD252E1CFD6E90002B74EA /* Egypt.mp3 */,
+				FEFD25331CFD6E9D002B74EA /* DesertOfDreams.mp3 */,
+				FEFD252F1CFD6E90002B74EA /* Temple.mp3 */,
 				FEFB29EA1CF3A46D002B2BAF /* AppDelegate.swift */,
 				FEFB29EC1CF3A46D002B2BAF /* ViewController.swift */,
 				FEFB29EE1CF3A46D002B2BAF /* Main.storyboard */,
@@ -156,15 +156,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FE2CCB2E1CFD092200766C71 /* DesertOfDreams.mp3 in Resources */,
-				FE2CCB2D1CFD092200766C71 /* caravan.ogg in Resources */,
+				FEFD25311CFD6E90002B74EA /* Egypt.mp3 in Resources */,
+				FEFD25341CFD6E9D002B74EA /* DesertOfDreams.mp3 in Resources */,
+				FEFD25321CFD6E90002B74EA /* Temple.mp3 in Resources */,
 				FE4375FB1CF82C3800491F4E /* Credits.txt in Resources */,
 				FEFB29F51CF3A46D002B2BAF /* LaunchScreen.storyboard in Resources */,
 				FEFB29F21CF3A46D002B2BAF /* Assets.xcassets in Resources */,
 				FEFB29F01CF3A46D002B2BAF /* Main.storyboard in Resources */,
-				FE2CCB2F1CFD092200766C71 /* TempleMystics.wav in Resources */,
+				FEFD25301CFD6E90002B74EA /* caravan.mp3 in Resources */,
 				FEBCA9291CF6861000A419E7 /* Levels.txt in Resources */,
-				FE2CCB301CFD092200766C71 /* v312.ogg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

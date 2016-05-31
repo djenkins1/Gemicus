@@ -54,39 +54,56 @@
 //      (DONE)credits view, with artists who created artwork
 //		(DONE)help/info view. Maybe have a tutorial?
 //
+//++++++++++++++++++++
+//BEFORE RELEASE
+//++++++++++++++++++++
 //should advance the tutorial past 0 when the timer button first pressed
-//maybe update the icon so that it has a different color background then black
+//maybe update the app icon so that it has a different color background then black
 //mute button for muting the music
-//should wrap around to first song in playlist when done, or randomize it?
+//	just pause/play the queueplayer when pressed
+//should wrap around to first song in playlist when done
 //randomize the song listings
-//figure out way to play ogg files or convert them?
-//
-//some kind of indicator to the player that they have won the level
-//		animation for winning the level
-//(?)random glint animations for gems
+//(TEST)figure out way to play ogg files or convert them
 //add animations for other buttons, i.e menuButtons...
 //change credits so that two buttons per row instead of one?
+//save progress of levels beaten/times/number of moves/number of color changes
+//	also save mute/unmute status
+//add a few more levels
+//some kind of indicator to the player that they have won the level
+//		(DONE)solitaire, make all the gems shrink to nothing one at a time
+//		(DONE)convert the gems into coins when they have scaled to 0
+//		problem with last gem, need to hide after animation done
+//		some kind of popup/animation at the end of all the animations, i.e score...
+//		+1 sound effect
+//			show score and end time on a scroll after last animation
+//			sound effect for winning level
+//				have sound, just need to play seperate from music
+//++++++++++++++++++++++++++++++++++++
 //
+//==================
 //future ideas
-//      (*)level editor, can save levels to own device or share with others via Gem Server
-//		(*)level editor view, would need to get size of board from user somehow(maybe allow dynamic resizing?)
-//		(*)rating system for each created/default level, posts to Gem Server. Allow rating on score screen
-//		change arrows on prev/next buttons to actual images?
-//			also maybe have enabled arrow images for when the buttons are actually clickable
-//      search created levels by author,title...
-//      hint animations for gems that are not winning color
-//		if level button size gets below certain amount put multiple pages on all levels view
-//		longer swipes should do multiple swaps of gems if possible
-//			see bookmarks, have stack overflow answer that could work here
-//		add level data to game board, i.e level title(DONE), creator name, your best score...
-//			maybe just for player created levels
-//			maybe show up on win screen for the level?
-//		add level info preview at bottom of level view
-//		powerup system
-//			examples: change all gems to certain color
-//		save progress of levels beaten/times/number of moves/number of color changes
-//		put levels into level packs, i.e folders with names
-//			have level pack named ipad that has larger boards
+//==================
+//(*)level editor, can save levels to own device or share with others via Gem Server
+//(*)level editor view, would need to get size of board from user somehow(maybe allow dynamic resizing?)
+//(*)rating system for each created/default level, posts to Gem Server. Allow rating on score screen
+//change arrows on prev/next buttons to actual images?
+//	also maybe have enabled arrow images for when the buttons are actually clickable
+//search created levels by author,title...
+//hint animations for gems that are not winning color
+//if level button size gets below certain amount put multiple pages on all levels view
+//longer swipes should do multiple swaps of gems if possible
+//	see bookmarks, have stack overflow answer that could work here
+//add level data to game board, i.e level title(DONE), creator name, your best score...
+//	maybe just for player created levels
+//	maybe show up on win screen for the level?
+//add level info preview at bottom of level view
+//powerup system
+//	examples: change all gems to certain color
+//put levels into level packs, i.e folders with names
+//	have level pack named ipad that has larger boards
+//(?)random glint animations for gems
+//====================================================
+
 
 import UIKit
 import AVFoundation
@@ -133,7 +150,8 @@ class ViewController: UIViewController
 	//if currently showing the tutorial then this is true
 	var showingTutorial = false
 	
-	var musicPlayer :AVQueuePlayer!
+	//holds the audio player for the music
+	var musicPlayer: AVQueuePlayer!
 
     override func viewDidLoad()
     {
@@ -154,13 +172,14 @@ class ViewController: UIViewController
 	{
 		var toReturn = [AVPlayerItem]()
 		//need to figure out how to play ogg files
-		let strDict = [ "DesertOfDreams" : "mp3" , "TempleMystics" : "wav" ]
+		let strDict = [ "DesertOfDreams" : "mp3" , "caravan" : "mp3", "Egypt" : "mp3" , "Temple" : "mp3" ]
 		for (key,value) in strDict
 		{
 			let urlPath = NSBundle.mainBundle().pathForResource(key, ofType: value )
 			let fileURL = NSURL(fileURLWithPath:urlPath!)
 			toReturn.append( AVPlayerItem(URL:fileURL) )
 		}
+		
 		return toReturn
 	}
 	
@@ -215,6 +234,7 @@ class ViewController: UIViewController
 		self.view.addSubview(infoButton)
 		self.view.addSubview(credButton)
 		
+		//some code for adding in random gems into the square tiles
 		/*
 		//background is 96x96 square tiles
 		let totalGems = Int(ceil(UIScreen.mainScreen().bounds.width * UIScreen.mainScreen().bounds.height) / CGFloat(96 * 96))
@@ -246,6 +266,49 @@ class ViewController: UIViewController
 		credButton.addTarget( self, action: #selector( self.gotoCreditsView) , forControlEvents: .TouchUpInside)
 		infoButton.addTarget( self, action: #selector( self.gotoHelpView) , forControlEvents: .TouchUpInside)
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
+	}
+	
+	func winningAnimation()
+	{
+		shrinkGem( 0 )
+	}
+	
+	func shrinkGem( index: Int )
+	{
+		if ( index >= allGems.count )
+		{
+			//hidePriorGem( index - 1 )
+			return
+		}
+		
+		let titleImage = UIImage( named: "coin" ) as UIImage?
+		UIView.animateWithDuration(1.0 ,
+		                           animations:
+			{
+				self.allGems[ index ].gemButton.transform = CGAffineTransformMakeScale(0.1, 0.1)
+			},
+		                           completion:
+			{
+				finish in
+				UIView.animateWithDuration(1.0)
+				{
+					self.hidePriorGem( index - 1 )
+					self.allGems[ index ].gemButton.setBackgroundImage( titleImage, forState: .Normal )
+					self.allGems[ index ].gemButton.transform = CGAffineTransformIdentity
+					self.shrinkGem( index + 1 )
+				}
+			}
+		)
+	}
+	
+	func hidePriorGem( index: Int )
+	{
+		if ( index < 0 || index >= allGems.count )
+		{
+				return
+		}
+		self.allGems[ index ].gemButton.hidden = true
+		
 	}
 	
 	//creates the view for the credits
@@ -907,6 +970,7 @@ class ViewController: UIViewController
 		let newImage = UIImage( named: "button" ) as UIImage?
 		nextButton.setBackgroundImage( newImage, forState: .Normal )
 		nextButton.userInteractionEnabled = true
+		winningAnimation()
 	}
 	
 	//reads the level data from the levels file and puts it into the level handler
