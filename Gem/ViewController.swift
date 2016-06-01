@@ -48,36 +48,42 @@
 //(DONE)animations for gems being pressed
 //(DONE)different app icon then default
 //(SCRAP)random gems embedded into square tiles on menu
+//(DONE)figure out way to play ogg files or convert them
+//(DONE)hide the tutorial if going past the first level
+//(DONE)should advance the tutorial past 0 when the timer button first pressed
+//(DONE)better playing of sound effects, use an array of audioplayers so that they can play at same time
 //(DONE)views
 //      (DONE)menu
 //      (DONE)all levels view
 //      (DONE)credits view, with artists who created artwork
 //		(DONE)help/info view. Maybe have a tutorial?
+//(DONE)some kind of indicator to the player that they have won the level
+//		(DONE)sound effect for winning level when last gem is done
+//		(DONE)show score and end time on a scroll after last animation
+//		(DONE)problem with last gem, need to hide after animation done
+//		(DONE)+1 sound effect
+//		(DONE)solitaire, make all the gems shrink to nothing one at a time
+//		(DONE)convert the gems into coins when they have scaled to 0
 //
 //++++++++++++++++++++
 //BEFORE RELEASE
 //++++++++++++++++++++
-//should advance the tutorial past 0 when the timer button first pressed
+//bug with first gem being the final one for the level
+//	weird animation errors
+//bug with going to another view when winning animation going
 //maybe update the app icon so that it has a different color background then black
 //mute button for muting the music
 //	just pause/play the queueplayer when pressed
 //should wrap around to first song in playlist when done
+//	see bookmarks, have stack overflow answer
 //randomize the song listings
-//(TEST)figure out way to play ogg files or convert them
 //add animations for other buttons, i.e menuButtons...
 //change credits so that two buttons per row instead of one?
+//add a few more levels
+//add music/sound effect credits to credits file(AFTER FIX 2 ROWS)
 //save progress of levels beaten/times/number of moves/number of color changes
 //	also save mute/unmute status
-//add a few more levels
-//some kind of indicator to the player that they have won the level
-//		(DONE)solitaire, make all the gems shrink to nothing one at a time
-//		(DONE)convert the gems into coins when they have scaled to 0
-//		problem with last gem, need to hide after animation done
-//		some kind of popup/animation at the end of all the animations, i.e score...
-//		+1 sound effect
-//			show score and end time on a scroll after last animation
-//			sound effect for winning level
-//				have sound, just need to play seperate from music
+//delay score added to title by 1sec,maybe have winning sound played along with score being shown
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -152,6 +158,9 @@ class ViewController: UIViewController
 	
 	//holds the audio player for the music
 	var musicPlayer: AVQueuePlayer!
+	
+	//holds the audio player for the sound effects
+	var effectPlayers = [AVPlayer]()
 
     override func viewDidLoad()
     {
@@ -159,28 +168,33 @@ class ViewController: UIViewController
 		readLevels()
 		playMusic()
 		createMenuView()
-		
     }
 	
+	//adds a sound effect to the queue, creating player if it does not exist
+	func playSound( soundName: String, fileType: String)
+	{
+		let urlPath = NSBundle.mainBundle().pathForResource( soundName, ofType: fileType )
+		let fileURL = NSURL(fileURLWithPath:urlPath!)
+		let player = AVPlayer( playerItem: AVPlayerItem(URL:fileURL) )
+		player.play()
+		effectPlayers.append( player )
+	}
+	
+	//plays the background music in a loop
 	func playMusic()
 	{
-		musicPlayer = AVQueuePlayer( items: getMusic() )
+		musicPlayer = AVQueuePlayer( items: Sounds.getMusic() )
 		musicPlayer.play()
 	}
 	
-	func getMusic() -> Array<AVPlayerItem>
+	func showWinScore()
 	{
-		var toReturn = [AVPlayerItem]()
-		//need to figure out how to play ogg files
-		let strDict = [ "DesertOfDreams" : "mp3" , "caravan" : "mp3", "Egypt" : "mp3" , "Temple" : "mp3" ]
-		for (key,value) in strDict
-		{
-			let urlPath = NSBundle.mainBundle().pathForResource(key, ofType: value )
-			let fileURL = NSURL(fileURLWithPath:urlPath!)
-			toReturn.append( AVPlayerItem(URL:fileURL) )
-		}
-		
-		return toReturn
+		hideTutorial()
+		let button = createDialog()
+		button.userInteractionEnabled = false
+		let time = convertTimerTime( timeCount )
+		let score = String( getScore() )
+		button.setTitle( "Score: \(score)\nTime: \(time)" , forState: .Normal )
 	}
 	
 	//deletes all current elements in the view and makes the menu GUI
@@ -234,33 +248,6 @@ class ViewController: UIViewController
 		self.view.addSubview(infoButton)
 		self.view.addSubview(credButton)
 		
-		//some code for adding in random gems into the square tiles
-		/*
-		//background is 96x96 square tiles
-		let totalGems = Int(ceil(UIScreen.mainScreen().bounds.width * UIScreen.mainScreen().bounds.height) / CGFloat(96 * 96))
-		let gemSize = 24
-		let gemsPerRow = Int(ceil(UIScreen.mainScreen().bounds.width / CGFloat(96) ))
-		
-		for index in 0..<totalGems
-		{
-			if arc4random_uniform(5) > 2
-			{
-				continue
-			}
-			
-			let myCol = index % gemsPerRow
-			let myRow = index / gemsPerRow
-			let xPos = ( myCol * 96 ) - 48 - ( gemSize / 2 )
-			let yPos = ( myRow * 96 ) - 48 - ( gemSize / 2 )
-
-			let imageView = UIImageView(image: UIImage(named: "jewel0")!)
-			imageView.frame = CGRect(x: xPos, y: yPos, width: gemSize, height: gemSize)
-			self.view.addSubview( imageView )
-			self.view.sendSubviewToBack( imageView )
-			
-		}
-		*/
-		//playButton.addTarget( self, action: #selector( self.toggleOverlay) , forControlEvents: .TouchUpInside)
 		playButton.addTarget( self, action: #selector( self.gotoNextLevel) , forControlEvents: .TouchUpInside)
 		levelButton.addTarget( self, action: #selector( self.gotoLevelsView) , forControlEvents: .TouchUpInside)
 		credButton.addTarget( self, action: #selector( self.gotoCreditsView) , forControlEvents: .TouchUpInside)
@@ -268,20 +255,23 @@ class ViewController: UIViewController
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
 	}
 	
+	//for starting animation loop on gems
 	func winningAnimation()
 	{
 		shrinkGem( 0 )
 	}
 	
+	//function that adds animation to each gem making it shrink and then display as coin
 	func shrinkGem( index: Int )
 	{
 		if ( index >= allGems.count )
 		{
-			//hidePriorGem( index - 1 )
 			return
 		}
 		
+		//self.allGems[ index ].gemButton.transform = CGAffineTransformIdentity
 		let titleImage = UIImage( named: "coin" ) as UIImage?
+		
 		UIView.animateWithDuration(1.0 ,
 		                           animations:
 			{
@@ -292,23 +282,65 @@ class ViewController: UIViewController
 				finish in
 				UIView.animateWithDuration(1.0)
 				{
-					self.hidePriorGem( index - 1 )
 					self.allGems[ index ].gemButton.setBackgroundImage( titleImage, forState: .Normal )
-					self.allGems[ index ].gemButton.transform = CGAffineTransformIdentity
 					self.shrinkGem( index + 1 )
+					self.animateGemEnd( index )
 				}
+
 			}
 		)
 	}
 	
-	func hidePriorGem( index: Int )
+	//shows the score dialog if the index provided refers to last gem
+	func showScoreIfLast( index: Int )
 	{
-		if ( index < 0 || index >= allGems.count )
+		if ( index == allGems.count - 1 )
 		{
-				return
+			showWinScore()
+			playGemSound( true )
 		}
-		self.allGems[ index ].gemButton.hidden = true
-		
+	}
+	
+	//plays the coin sound effect if not the last gem, or the win sound effect if is
+	func playGemSound( isLast : Bool )
+	{
+		if ( isLast )
+		{
+			self.playSound( Sounds.winSound().name, fileType: Sounds.winSound().type )
+		}
+		else
+		{
+			self.playSound( Sounds.coinSound().name, fileType: Sounds.coinSound().type )
+		}
+	}
+	
+	//function to be called when the gem is done shrinking
+	func animateGemEnd( index : Int )
+	{
+		UIView.animateWithDuration(1.0 ,
+		                           animations:
+			{
+				self.allGems[ index ].gemButton.transform = CGAffineTransformIdentity
+			},
+		                           completion:
+			{
+				finish in
+				UIView.animateWithDuration(1.0)
+				{
+					self.playGemSound( false )
+					self.allGems[ index ].gemButton.hidden = true
+					self.showScoreIfLast( index )
+				}
+				
+			}
+		)
+	}
+	
+	//returns the score for the current level
+	func getScore() -> Int
+	{
+		let level = Level.defaultLevels( levelHandler)[ currentLevel ]
+		return level.totalCols * level.totalRows
 	}
 	
 	//creates the view for the credits
@@ -362,46 +394,64 @@ class ViewController: UIViewController
 		}
 	}
 	
+	//creates a dialog box, used for tutorial text display
+	func createDialog() -> UIButton
+	{
+		let buttonImage = UIImage( named: "title" ) as UIImage?
+		let toReturn = UIButton(type: UIButtonType.Custom) as UIButton
+		let screenWidth = UIScreen.mainScreen().bounds.width
+		let screenHeight = UIScreen.mainScreen().bounds.height
+		toReturn.setBackgroundImage( buttonImage, forState: .Normal )
+		toReturn.tag = 0
+		toReturn.titleLabel?.numberOfLines = 0
+		toReturn.contentEdgeInsets = UIEdgeInsetsMake(12,12,12,12)
+		toReturn.setTitleColor( .blackColor(), forState: .Normal)
+		let myHeight = screenHeight * 0.12
+		toReturn.frame = CGRectMake( 0, CGFloat( screenHeight * 0.85 ), CGFloat( screenWidth ), CGFloat( myHeight ))
+		self.view.addSubview( toReturn )
+		return toReturn
+	}
+	
 	//creates the dialog box at the bottom of the screen for the tutorial text
 	func createTutorialView()
 	{
-		let screenWidth = UIScreen.mainScreen().bounds.width
-		let screenHeight = UIScreen.mainScreen().bounds.height
-		let buttonImage = UIImage( named: "title" ) as UIImage?
-		tutorView = UIButton(type: UIButtonType.Custom) as UIButton
-		tutorView.setBackgroundImage( buttonImage, forState: .Normal )
-		tutorView.tag = 0
-		tutorView.setTitle( getTutorialText( 0 ) , forState: .Normal )
-		//tutorView.titleLabel?.lineBreakMode = .ByWordWrapping
-		//tutorView.titleLabel?.adjustsFontSizeToFitWidth = true
-		tutorView.titleLabel?.numberOfLines = 0
-		tutorView.contentEdgeInsets = UIEdgeInsetsMake(12,12,12,12)
-		tutorView.setTitleColor( .blackColor(), forState: .Normal)
-		//tutorView.userInteractionEnabled = false
+		tutorView = createDialog()
+		tutorView.tag = -1
 		tutorView.addTarget( self, action: #selector( self.clickTutorialDialog(_:)) , forControlEvents: .TouchUpInside)
-		let myHeight = screenHeight * 0.12
-		tutorView.frame = CGRectMake( 0, CGFloat( screenHeight * 0.85 ), CGFloat( screenWidth ), CGFloat( myHeight ))
-		self.view.addSubview( tutorView )
+		clickTutorialDialog( tutorView )
 	}
 	
 	func clickTutorialDialog( sender: AnyObject )
 	{
+		if ( tutorView == nil )
+		{
+				return
+		}
+		
 		//advance the tag along and change the text to the new tag
-		(sender as! UIButton).tag += 1
-		let newText = getTutorialText( (sender as! UIButton).tag )
+		tutorView.tag += 1
+		let newText = getTutorialText( tutorView.tag )
 		if newText == ""
 		{
 			showingTutorial = false
 			//delete the tutorial view
-			(sender as! UIButton).setTitle( newText, forState: .Normal )
-			(sender as! UIButton).userInteractionEnabled = false
-			(sender as! UIButton).hidden = true
-			
+			hideTutorial()
 		}
 		else
 		{
-			(sender as! UIButton).setTitle( newText, forState: .Normal )
+			tutorView.setTitle( newText, forState: .Normal )
 		}
+	}
+	
+	func hideTutorial()
+	{
+		if ( tutorView == nil )
+		{
+			return
+		}
+		tutorView.setTitle( "", forState: .Normal )
+		tutorView.userInteractionEnabled = false
+		tutorView.hidden = true
 	}
 	
 	//returns the help text associated with the index given
@@ -460,16 +510,12 @@ class ViewController: UIViewController
 		let screenSize: CGRect = UIScreen.mainScreen().bounds
 		let screenWidth = screenSize.width * 0.8
 		let screenHeight = screenSize.height * 0.8
-		//let the padding to the left of the gem board be based on the width of the screen
-		//let startX = floor( Double( screenSize.width * 0.15 ) )
-		//let the top left corner of the game board be based on the height of the screen
 		let startY = floor( Double( screenSize.height * 0.2 ))
 		let totalSize = floor( screenWidth + screenHeight )
 		let squareSize = Int(totalSize) / Int( ( perRow ) * 4 )
 		let backImage = UIImage( named: "button" ) as UIImage?
 		let titleImage = UIImage( named: "title" ) as UIImage?
 		let defaultHeight = 32
-		//let paddingWidth = screenWidth * 0.02
 		let paddingHeight = screenHeight * 0.02
 		
 		let centerX = UIScreen.mainScreen().bounds.width / 2
@@ -492,7 +538,6 @@ class ViewController: UIViewController
 		roomTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		roomTitle.addTarget( self, action: #selector( self.backToMenu ) , forControlEvents: .TouchUpInside)
 		self.view.addSubview( roomTitle )
-		//	func centerBoxPosition( boxesPerRow: Int, index: Int, boxWidth: Int ) -> Int
 		for _ in Level.defaultLevels( levelHandler )
 		{
 			index = index + 1
@@ -557,7 +602,6 @@ class ViewController: UIViewController
 		let buttonWidth = 48
 		let screenWidth = UIScreen.mainScreen().bounds.width
 		let centerX = Int( ceil(screenWidth * 0.5))
-		//let screenWidth = UIScreen.mainScreen().bounds.width * 0.5
 		
 		timerView = UIButton(type: UIButtonType.Custom) as UIButton
 		timerView.addTarget( self, action: #selector( self.toggleOverlay) , forControlEvents: .TouchUpInside)
@@ -594,7 +638,6 @@ class ViewController: UIViewController
 		levelTitle.frame = CGRectMake( CGFloat( x ), CGFloat( y - height - 2), CGFloat( screenWidth ), CGFloat( height ))
 		levelTitle.setTitle( level.levelName, forState: .Normal )
 		levelTitle.setBackgroundImage( titleImage, forState: .Normal )
-		//levelTitle.userInteractionEnabled = false
 		levelTitle.addTarget( self, action: #selector( self.gotoLevelsView) , forControlEvents: .TouchUpInside)
 		levelTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		self.view.addSubview( levelTitle )
@@ -614,6 +657,10 @@ class ViewController: UIViewController
 		if ( showingOverlay )
 		{
 			hideGemOverlay()
+			if ( showingTutorial && tutorView != nil && tutorView.tag == 0 )
+			{
+					clickTutorialDialog( tutorView )
+			}
 		}
 		else
 		{
@@ -627,6 +674,7 @@ class ViewController: UIViewController
 		allGems.removeAll()
 		timeCount = 0
 		gemDict.removeAll()
+		effectPlayers.removeAll()
 	}
 	
 	//sets the view up for the next level
@@ -635,6 +683,12 @@ class ViewController: UIViewController
 		resetMyView()
 		clearBoardData()
 		currentLevel = currentLevel + 1
+		//don't show the tutorial after the first level
+		if ( currentLevel > 0 )
+		{
+				showingTutorial = false
+		}
+		
 		if ( currentLevel >= Level.defaultLevels( levelHandler ).count )
 		{
 			currentLevel = 0
@@ -649,6 +703,7 @@ class ViewController: UIViewController
 	func gotoHelpView()
 	{
 		showingTutorial = true
+		currentLevel = -1
 		gotoNextLevel()
 	}
 	

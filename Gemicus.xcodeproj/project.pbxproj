@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		FE4375FB1CF82C3800491F4E /* Credits.txt in Resources */ = {isa = PBXBuildFile; fileRef = FE4375FA1CF82C3800491F4E /* Credits.txt */; };
+		FE6D33991CFE50DC0037A0C1 /* PDanimateDone.aif in Resources */ = {isa = PBXBuildFile; fileRef = FE6D33971CFE50DC0037A0C1 /* PDanimateDone.aif */; };
+		FE6D339A1CFE50DC0037A0C1 /* PDgemWin.aif in Resources */ = {isa = PBXBuildFile; fileRef = FE6D33981CFE50DC0037A0C1 /* PDgemWin.aif */; };
+		FE6D339C1CFE510F0037A0C1 /* Sounds.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE6D339B1CFE510F0037A0C1 /* Sounds.swift */; };
 		FE86C4641CF6DAE40063DE14 /* LevelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE86C4631CF6DAE40063DE14 /* LevelHandler.swift */; };
 		FEBCA9291CF6861000A419E7 /* Levels.txt in Resources */ = {isa = PBXBuildFile; fileRef = FEBCA9281CF6861000A419E7 /* Levels.txt */; };
 		FEBCA92B1CF688A500A419E7 /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBCA92A1CF688A500A419E7 /* Process.swift */; };
@@ -27,6 +30,9 @@
 
 /* Begin PBXFileReference section */
 		FE4375FA1CF82C3800491F4E /* Credits.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Credits.txt; sourceTree = "<group>"; };
+		FE6D33971CFE50DC0037A0C1 /* PDanimateDone.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = PDanimateDone.aif; sourceTree = "<group>"; };
+		FE6D33981CFE50DC0037A0C1 /* PDgemWin.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = PDgemWin.aif; sourceTree = "<group>"; };
+		FE6D339B1CFE510F0037A0C1 /* Sounds.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sounds.swift; sourceTree = "<group>"; };
 		FE86C4631CF6DAE40063DE14 /* LevelHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelHandler.swift; sourceTree = "<group>"; };
 		FEBCA9281CF6861000A419E7 /* Levels.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Levels.txt; sourceTree = "<group>"; };
 		FEBCA92A1CF688A500A419E7 /* Process.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
@@ -76,6 +82,8 @@
 		FEFB29E91CF3A46D002B2BAF /* Gem */ = {
 			isa = PBXGroup;
 			children = (
+				FE6D33971CFE50DC0037A0C1 /* PDanimateDone.aif */,
+				FE6D33981CFE50DC0037A0C1 /* PDgemWin.aif */,
 				FEFD252D1CFD6E90002B74EA /* caravan.mp3 */,
 				FEFD252E1CFD6E90002B74EA /* Egypt.mp3 */,
 				FEFD25331CFD6E9D002B74EA /* DesertOfDreams.mp3 */,
@@ -93,6 +101,7 @@
 				FEBCA92A1CF688A500A419E7 /* Process.swift */,
 				FE86C4631CF6DAE40063DE14 /* LevelHandler.swift */,
 				FE4375FA1CF82C3800491F4E /* Credits.txt */,
+				FE6D339B1CFE510F0037A0C1 /* Sounds.swift */,
 			);
 			path = Gem;
 			sourceTree = "<group>";
@@ -156,6 +165,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FE6D33991CFE50DC0037A0C1 /* PDanimateDone.aif in Resources */,
+				FE6D339A1CFE50DC0037A0C1 /* PDgemWin.aif in Resources */,
 				FEFD25311CFD6E90002B74EA /* Egypt.mp3 in Resources */,
 				FEFD25341CFD6E9D002B74EA /* DesertOfDreams.mp3 in Resources */,
 				FEFD25321CFD6E90002B74EA /* Temple.mp3 in Resources */,
@@ -180,6 +191,7 @@
 				FED1C19B1CF514790084AAB2 /* Level.swift in Sources */,
 				FED1C19D1CF5178A0084AAB2 /* GemColor.swift in Sources */,
 				FEDC227F1CF3B4C0009A6B96 /* Gem.swift in Sources */,
+				FE6D339C1CFE510F0037A0C1 /* Sounds.swift in Sources */,
 				FE86C4641CF6DAE40063DE14 /* LevelHandler.swift in Sources */,
 				FEBCA92B1CF688A500A419E7 /* Process.swift in Sources */,
 			);

@@ -144,5 +144,5 @@
 	blue	red		blue	red		blue
 	blue	red		red		red		blue
 	blue	red		blue	red		blue
-	blue	red		blue	red		blue
+	blue	blue	blue	blue	blue
 #
