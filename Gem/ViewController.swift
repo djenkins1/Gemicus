@@ -52,6 +52,11 @@
 //(DONE)hide the tutorial if going past the first level
 //(DONE)should advance the tutorial past 0 when the timer button first pressed
 //(DONE)better playing of sound effects, use an array of audioplayers so that they can play at same time
+//(DONE)bug with first gem being the final one for the level
+//(DONE)delay score added to title by 1sec,maybe have winning sound played along with score being shown
+//(DONE)bug with going to another view when winning animation going
+//(DONE)change credits so that two buttons per row instead of one
+//(DONE)add music/sound effect credits to credits file
 //(DONE)views
 //      (DONE)menu
 //      (DONE)all levels view
@@ -68,22 +73,19 @@
 //++++++++++++++++++++
 //BEFORE RELEASE
 //++++++++++++++++++++
-//bug with first gem being the final one for the level
-//	weird animation errors
-//bug with going to another view when winning animation going
 //maybe update the app icon so that it has a different color background then black
+//only change the background on the buttons to enabled when the winning animation is over
+//	possible: get rid of showingWin and just disable all the buttons until after animation is over
 //mute button for muting the music
 //	just pause/play the queueplayer when pressed
 //should wrap around to first song in playlist when done
 //	see bookmarks, have stack overflow answer
 //randomize the song listings
 //add animations for other buttons, i.e menuButtons...
-//change credits so that two buttons per row instead of one?
 //add a few more levels
-//add music/sound effect credits to credits file(AFTER FIX 2 ROWS)
 //save progress of levels beaten/times/number of moves/number of color changes
 //	also save mute/unmute status
-//delay score added to title by 1sec,maybe have winning sound played along with score being shown
+//	see bookmarks, have tutorial from site(NOT StackOverflow)
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -92,9 +94,9 @@
 //(*)level editor, can save levels to own device or share with others via Gem Server
 //(*)level editor view, would need to get size of board from user somehow(maybe allow dynamic resizing?)
 //(*)rating system for each created/default level, posts to Gem Server. Allow rating on score screen
+//(*)search created levels by author,title...
 //change arrows on prev/next buttons to actual images?
 //	also maybe have enabled arrow images for when the buttons are actually clickable
-//search created levels by author,title...
 //hint animations for gems that are not winning color
 //if level button size gets below certain amount put multiple pages on all levels view
 //longer swipes should do multiple swaps of gems if possible
@@ -161,6 +163,15 @@ class ViewController: UIViewController
 	
 	//holds the audio player for the sound effects
 	var effectPlayers = [AVPlayer]()
+	
+	//timer that delays for the winningAnimation so that no bugs with overlapping animations
+	var delayWinTimer : NSTimer!
+	
+	//timer that delays for the score to be shown until after the last coin sound
+	var delayScoreTimer : NSTimer!
+	
+	//true if the win animation is being shown or false otherwise
+	var showingWin = false
 
     override func viewDidLoad()
     {
@@ -187,14 +198,26 @@ class ViewController: UIViewController
 		musicPlayer.play()
 	}
 	
+	//shows the score dialog when called
 	func showWinScore()
 	{
 		hideTutorial()
 		let button = createDialog()
 		button.userInteractionEnabled = false
-		let time = convertTimerTime( timeCount )
+		let time = String(timeCount)//convertTimerTime( timeCount )
+		//let score = String( getScore() )
+		button.setTitle( "Time:\t\(time)" , forState: .Normal )
+		NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(self.addScoreToWinDialog), userInfo: button, repeats: false)
+	}
+	
+	//function called after delay to add score to win dialog
+	func addScoreToWinDialog( timerObj : NSTimer )
+	{
+		let button = timerObj.userInfo as! UIButton
 		let score = String( getScore() )
-		button.setTitle( "Score: \(score)\nTime: \(time)" , forState: .Normal )
+		button.setTitle( button.currentTitle! + "\nScore:\t\(score)", forState: .Normal )
+		playGemSound( true )
+		showingWin = false
 	}
 	
 	//deletes all current elements in the view and makes the menu GUI
@@ -297,7 +320,6 @@ class ViewController: UIViewController
 		if ( index == allGems.count - 1 )
 		{
 			showWinScore()
-			playGemSound( true )
 		}
 	}
 	
@@ -349,6 +371,7 @@ class ViewController: UIViewController
 		let screenWidth = UIScreen.mainScreen().bounds.width
 		let titleWidth = Int( ceil(screenWidth * 0.5) )
 		let padding = Int( ceil( UIScreen.mainScreen().bounds.height * 0.04 ) )
+		let widthPadding = Int( ceil( UIScreen.mainScreen().bounds.width * 0.04 ) )
 		let centerX = screenWidth / 2
 		let startY = Int( ceil( UIScreen.mainScreen().bounds.width * 0.33 ) )
 		let defaultWidth = 128
@@ -379,8 +402,20 @@ class ViewController: UIViewController
 		for creditObj in allCredits
 		{
 			index = index + 1
+			let indexByZero = index - 1
 			let button = UIButton(type: UIButtonType.Custom) as UIButton
-			button.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + ( index * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
+			
+			let myHeight = CGFloat( startY + ( ( ( index + 1 ) / 2 ) * ( padding  + defaultHeight ) ) )
+			if indexByZero % 2 == 0
+			{
+				//start of a new row
+				button.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth + widthPadding ) ), CGFloat( myHeight ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
+			}
+			else
+			{
+				button.frame = CGRectMake( CGFloat( centerX + CGFloat(widthPadding) ), CGFloat(myHeight), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
+			}
+			
 			let author = creditObj[ "author"]!
 			let title = creditObj[ "title"]!
 			button.setTitle( "\(title) - \(author)" , forState: .Normal )
@@ -389,7 +424,6 @@ class ViewController: UIViewController
 			button.titleLabel!.font = button.titleLabel!.font.fontWithSize( 10 )
 			button.tag = index - 1
 			button.addTarget( self, action: #selector( self.clickCreditsTag(_:)) , forControlEvents: .TouchUpInside)
-			//button.titleLabel!.adjustsFontSizeToFitWidth = true
 			self.view.addSubview(button)
 		}
 	}
@@ -471,6 +505,10 @@ class ViewController: UIViewController
 	//handler to goto the levels view
 	func gotoLevelsView()
 	{
+		if ( showingWin )
+		{
+			return
+		}
 		currentLevel = 0
 		resetMyView()
 		createLevelsView()
@@ -646,6 +684,10 @@ class ViewController: UIViewController
 	//go back to the menu
 	func backToMenu()
 	{
+		if ( showingWin )
+		{
+			return
+		}
 		currentLevel = currentLevel - 1
 		createMenuView()
 	}
@@ -680,6 +722,10 @@ class ViewController: UIViewController
 	//sets the view up for the next level
 	func gotoNextLevel()
 	{
+		if ( showingWin )
+		{
+			return
+		}
 		resetMyView()
 		clearBoardData()
 		currentLevel = currentLevel + 1
@@ -702,6 +748,10 @@ class ViewController: UIViewController
 	
 	func gotoHelpView()
 	{
+		if ( showingWin )
+		{
+			return
+		}
 		showingTutorial = true
 		currentLevel = -1
 		gotoNextLevel()
@@ -998,7 +1048,10 @@ class ViewController: UIViewController
 				finish in
 				UIView.animateWithDuration(0.0)
 				{
-					(sender as! UIButton).transform = CGAffineTransformIdentity
+					if finish
+					{
+						(sender as! UIButton).transform = CGAffineTransformIdentity
+					}
 				}
 			}
 		)
@@ -1019,13 +1072,15 @@ class ViewController: UIViewController
 	func endLevelWon()
 	{
 		timerView.userInteractionEnabled = false
+		showingWin = true
 		showingOverlay = true
 		showGemOverlay()
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "winstone")!)
 		let newImage = UIImage( named: "button" ) as UIImage?
 		nextButton.setBackgroundImage( newImage, forState: .Normal )
 		nextButton.userInteractionEnabled = true
-		winningAnimation()
+		playSound( Sounds.winSoundBegin().name, fileType: Sounds.winSoundBegin().type )
+		delayWinTimer = NSTimer.scheduledTimerWithTimeInterval(0.4, target: self, selector: #selector(self.winningAnimation), userInfo: nil, repeats: false)
 	}
 	
 	//reads the level data from the levels file and puts it into the level handler

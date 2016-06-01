@@ -18,14 +18,23 @@ class Sounds
 	{
 		var toReturn = [AVPlayerItem]()
 		//need to figure out how to play ogg files
-		let strDict = [ "DesertOfDreams" : "mp3" , "caravan" : "mp3", "Egypt" : "mp3" , "Temple" : "mp3" ]
-		for (key,value) in strDict
+		for sound in musicList()
 		{
-			let urlPath = NSBundle.mainBundle().pathForResource(key, ofType: value )
+			let urlPath = NSBundle.mainBundle().pathForResource( sound.name , ofType: sound.type )
 			let fileURL = NSURL(fileURLWithPath:urlPath!)
 			toReturn.append( AVPlayerItem(URL:fileURL) )
 		}
 		
+		return toReturn
+	}
+	
+	static func musicList() -> Array<Sounds>
+	{
+		var toReturn = [Sounds]()
+		toReturn.append( Sounds( name: "DesertOfDreams" , type: "mp3" ) )
+		toReturn.append( Sounds( name: "caravan" , type: "mp3" ) )
+		toReturn.append( Sounds( name: "Egypt" , type: "mp3" ) )
+		toReturn.append( Sounds( name: "Temple" , type: "mp3" ) )
 		return toReturn
 	}
 	
@@ -37,5 +46,10 @@ class Sounds
 	static func winSound() -> Sounds
 	{
 			return Sounds( name: "PDanimateDone" , type: "aif" )
+	}
+	
+	static func winSoundBegin() -> Sounds
+	{
+		return Sounds( name: "PDwinBegin" , type: "aif" )
 	}
 }

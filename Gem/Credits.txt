@@ -52,3 +52,39 @@
 @other
 	Menu Buttons
 #
+@title
+	Music
+@author
+	TheMysticBard
+@link
+	http://opengameart.org/content/the-desert-of-dreams
+@other
+	Desert of Dreams
+#
+@title
+	Music
+@author
+	Jason Dagenet
+@link
+	http://opengameart.org/content/temple-of-the-mystics
+@other
+	Temple of the Mystics
+#
+@title
+	Music
+@author
+	brandon75689
+@link
+	http://opengameart.org/content/egyptian-meditation-music
+@other
+	v312
+#
+@title
+	SFX
+@author
+	wobbleboxx
+@link
+	http://opengameart.org/content/level-up-power-up-coin-get-13-sounds
+@other
+	Coin,Win,BeginWin SFX
+#

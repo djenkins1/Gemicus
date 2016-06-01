@@ -16,6 +16,7 @@
 		FEBCA92B1CF688A500A419E7 /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBCA92A1CF688A500A419E7 /* Process.swift */; };
 		FED1C19B1CF514790084AAB2 /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED1C19A1CF514790084AAB2 /* Level.swift */; };
 		FED1C19D1CF5178A0084AAB2 /* GemColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED1C19C1CF5178A0084AAB2 /* GemColor.swift */; };
+		FEDA786A1CFEA514000A5AEB /* PDwinBegin.aif in Resources */ = {isa = PBXBuildFile; fileRef = FEDA78691CFEA514000A5AEB /* PDwinBegin.aif */; };
 		FEDC227F1CF3B4C0009A6B96 /* Gem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEDC227E1CF3B4C0009A6B96 /* Gem.swift */; };
 		FEFB29EB1CF3A46D002B2BAF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEFB29EA1CF3A46D002B2BAF /* AppDelegate.swift */; };
 		FEFB29ED1CF3A46D002B2BAF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEFB29EC1CF3A46D002B2BAF /* ViewController.swift */; };
@@ -38,6 +39,7 @@
 		FEBCA92A1CF688A500A419E7 /* Process.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
 		FED1C19A1CF514790084AAB2 /* Level.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Level.swift; sourceTree = "<group>"; };
 		FED1C19C1CF5178A0084AAB2 /* GemColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GemColor.swift; sourceTree = "<group>"; };
+		FEDA78691CFEA514000A5AEB /* PDwinBegin.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = PDwinBegin.aif; sourceTree = "<group>"; };
 		FEDC227E1CF3B4C0009A6B96 /* Gem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Gem.swift; sourceTree = "<group>"; };
 		FEFB29E71CF3A46D002B2BAF /* Gemicus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gemicus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FEFB29EA1CF3A46D002B2BAF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 				FE86C4631CF6DAE40063DE14 /* LevelHandler.swift */,
 				FE4375FA1CF82C3800491F4E /* Credits.txt */,
 				FE6D339B1CFE510F0037A0C1 /* Sounds.swift */,
+				FEDA78691CFEA514000A5AEB /* PDwinBegin.aif */,
 			);
 			path = Gem;
 			sourceTree = "<group>";
@@ -176,6 +179,7 @@
 				FEFB29F01CF3A46D002B2BAF /* Main.storyboard in Resources */,
 				FEFD25301CFD6E90002B74EA /* caravan.mp3 in Resources */,
 				FEBCA9291CF6861000A419E7 /* Levels.txt in Resources */,
+				FEDA786A1CFEA514000A5AEB /* PDwinBegin.aif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
