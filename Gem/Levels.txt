@@ -1,5 +1,5 @@
 @name
-	Level 1
+	Blue Stripes
 @author
 	Dilan Jenkins
 @rows
@@ -86,6 +86,45 @@
 	blue	blue		blue
 	blue	blue		blue
 	blue	blue		blue
+#
+@name
+	Purple Chevron
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	white	purple	white
+	white	white	purple
+	white	purple	white
+#
+@name
+	Yellow H
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+yellow	red		yellow
+yellow	yellow	yellow
+yellow	red		yellow
+#
+@name
+	Red Corners
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	red		red		white
+	red		white	red
+	white	red		red
 #
 @name
 	Purple Box

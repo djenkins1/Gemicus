@@ -57,6 +57,8 @@
 //(DONE)bug with going to another view when winning animation going
 //(DONE)change credits so that two buttons per row instead of one
 //(DONE)add music/sound effect credits to credits file
+//DONE)should wrap around to first song in playlist when done
+//(DONE)randomize the song listings
 //(DONE)views
 //      (DONE)menu
 //      (DONE)all levels view
@@ -73,19 +75,23 @@
 //++++++++++++++++++++
 //BEFORE RELEASE
 //++++++++++++++++++++
+//disable the fucking level title press when the showingOverlay is false
 //maybe update the app icon so that it has a different color background then black
+//	maybe change to 2nd level on single square tile
 //only change the background on the buttons to enabled when the winning animation is over
-//	possible: get rid of showingWin and just disable all the buttons until after animation is over
 //mute button for muting the music
-//	just pause/play the queueplayer when pressed
-//should wrap around to first song in playlist when done
-//	see bookmarks, have stack overflow answer
-//randomize the song listings
+//	just pause/play the player when pressed
 //add animations for other buttons, i.e menuButtons...
-//add a few more levels
+//add a few more levels(AIM for 20 to 30)
+//only show 4 levels to a row in levels view
 //save progress of levels beaten/times/number of moves/number of color changes
 //	also save mute/unmute status
-//	see bookmarks, have tutorial from site(NOT StackOverflow)
+//	will probably have to use save file for particular levels?
+//(AFTER SAVES)add level info preview at bottom of level view
+//(AFTER SAVES)if first time running app show tutorial by default when play pressed
+//have score based on number of swipes/swaps
+//need a new name for level 2
+//maybe have a view specifically for winning last level
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -104,12 +110,12 @@
 //add level data to game board, i.e level title(DONE), creator name, your best score...
 //	maybe just for player created levels
 //	maybe show up on win screen for the level?
-//add level info preview at bottom of level view
 //powerup system
 //	examples: change all gems to certain color
 //put levels into level packs, i.e folders with names
 //	have level pack named ipad that has larger boards
 //(?)random glint animations for gems
+//maybe have option to turn off animations winning
 //====================================================
 
 
@@ -159,7 +165,9 @@ class ViewController: UIViewController
 	var showingTutorial = false
 	
 	//holds the audio player for the music
-	var musicPlayer: AVQueuePlayer!
+	var musicPlayer: AVPlayer!
+	
+	var playMusicList = [Sounds]()
 	
 	//holds the audio player for the sound effects
 	var effectPlayers = [AVPlayer]()
@@ -194,8 +202,20 @@ class ViewController: UIViewController
 	//plays the background music in a loop
 	func playMusic()
 	{
-		musicPlayer = AVQueuePlayer( items: Sounds.getMusic() )
+		playMusicList = Sounds.randomMusicList()
+		musicPlayer = AVPlayer( playerItem: playMusicList[ 0 ].getItem() )
 		musicPlayer.play()
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.playerDidFinishPlaying(_:)), name: AVPlayerItemDidPlayToEndTimeNotification, object: musicPlayer.currentItem )
+	}
+	
+	//called when the player finishes a song
+	func playerDidFinishPlaying(note: NSNotification)
+	{
+		NSNotificationCenter.defaultCenter().removeObserver( note.object! )
+		playMusicList.append( playMusicList.removeAtIndex( 0 ) )
+		musicPlayer = AVPlayer( playerItem: playMusicList[ 0 ].getItem() )
+		musicPlayer.play()
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.playerDidFinishPlaying(_:)), name: AVPlayerItemDidPlayToEndTimeNotification, object: musicPlayer.currentItem )
 	}
 	
 	//shows the score dialog when called
@@ -688,6 +708,7 @@ class ViewController: UIViewController
 		{
 			return
 		}
+		showingTutorial = false
 		currentLevel = currentLevel - 1
 		createMenuView()
 	}
