@@ -14,6 +14,7 @@
 		FE86C4641CF6DAE40063DE14 /* LevelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE86C4631CF6DAE40063DE14 /* LevelHandler.swift */; };
 		FEBCA9291CF6861000A419E7 /* Levels.txt in Resources */ = {isa = PBXBuildFile; fileRef = FEBCA9281CF6861000A419E7 /* Levels.txt */; };
 		FEBCA92B1CF688A500A419E7 /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBCA92A1CF688A500A419E7 /* Process.swift */; };
+		FEC0F70F1D016F7B00A8C859 /* ScoreObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC0F70E1D016F7B00A8C859 /* ScoreObject.swift */; };
 		FED1C19B1CF514790084AAB2 /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED1C19A1CF514790084AAB2 /* Level.swift */; };
 		FED1C19D1CF5178A0084AAB2 /* GemColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED1C19C1CF5178A0084AAB2 /* GemColor.swift */; };
 		FEDA786A1CFEA514000A5AEB /* PDwinBegin.aif in Resources */ = {isa = PBXBuildFile; fileRef = FEDA78691CFEA514000A5AEB /* PDwinBegin.aif */; };
@@ -37,6 +38,7 @@
 		FE86C4631CF6DAE40063DE14 /* LevelHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelHandler.swift; sourceTree = "<group>"; };
 		FEBCA9281CF6861000A419E7 /* Levels.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Levels.txt; sourceTree = "<group>"; };
 		FEBCA92A1CF688A500A419E7 /* Process.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
+		FEC0F70E1D016F7B00A8C859 /* ScoreObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScoreObject.swift; sourceTree = "<group>"; };
 		FED1C19A1CF514790084AAB2 /* Level.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Level.swift; sourceTree = "<group>"; };
 		FED1C19C1CF5178A0084AAB2 /* GemColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GemColor.swift; sourceTree = "<group>"; };
 		FEDA78691CFEA514000A5AEB /* PDwinBegin.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = PDwinBegin.aif; sourceTree = "<group>"; };
@@ -68,6 +70,7 @@
 		FEFB29DE1CF3A46D002B2BAF = {
 			isa = PBXGroup;
 			children = (
+				FEC0F70E1D016F7B00A8C859 /* ScoreObject.swift */,
 				FEFB29E91CF3A46D002B2BAF /* Gem */,
 				FEFB29E81CF3A46D002B2BAF /* Products */,
 			);
@@ -193,6 +196,7 @@
 				FEFB29ED1CF3A46D002B2BAF /* ViewController.swift in Sources */,
 				FEFB29EB1CF3A46D002B2BAF /* AppDelegate.swift in Sources */,
 				FED1C19B1CF514790084AAB2 /* Level.swift in Sources */,
+				FEC0F70F1D016F7B00A8C859 /* ScoreObject.swift in Sources */,
 				FED1C19D1CF5178A0084AAB2 /* GemColor.swift in Sources */,
 				FEDC227F1CF3B4C0009A6B96 /* Gem.swift in Sources */,
 				FE6D339C1CFE510F0037A0C1 /* Sounds.swift in Sources */,

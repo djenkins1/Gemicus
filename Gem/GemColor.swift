@@ -36,4 +36,9 @@ class GemColor
 		}
 		return -1
 	}
+	
+	func totalColors() -> Int
+	{
+		return BLACK + 1
+	}
 }

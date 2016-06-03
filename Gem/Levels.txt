@@ -185,3 +185,18 @@ yellow	red		yellow
 	blue	red		blue	red		blue
 	blue	blue	blue	blue	blue
 #
+@name
+	Black and Yellow
+@author
+	Dilan Jenkins
+@rows
+	5
+@cols
+	5
+@data
+	black	yellow	yellow	yellow	black
+	black	yellow	black	black	black
+	black	yellow	yellow	yellow	black
+	black	black	black	yellow	black
+	black	yellow	yellow	yellow	black
+#

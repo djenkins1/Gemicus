@@ -59,6 +59,9 @@
 //(DONE)add music/sound effect credits to credits file
 //DONE)should wrap around to first song in playlist when done
 //(DONE)randomize the song listings
+//(DONE)disable the fucking level title press when the showingOverlay is false
+//(DONE)only change the background on the buttons to enabled when the winning animation is over
+//(DONE)have score based on number of swipes/swaps
 //(DONE)views
 //      (DONE)menu
 //      (DONE)all levels view
@@ -75,23 +78,23 @@
 //++++++++++++++++++++
 //BEFORE RELEASE
 //++++++++++++++++++++
-//disable the fucking level title press when the showingOverlay is false
 //maybe update the app icon so that it has a different color background then black
 //	maybe change to 2nd level on single square tile
-//only change the background on the buttons to enabled when the winning animation is over
 //mute button for muting the music
+//	should only be on main menu
 //	just pause/play the player when pressed
 //add animations for other buttons, i.e menuButtons...
 //add a few more levels(AIM for 20 to 30)
 //only show 4 levels to a row in levels view
-//save progress of levels beaten/times/number of moves/number of color changes
+//save progress of levels beaten/times/scores
 //	also save mute/unmute status
 //	will probably have to use save file for particular levels?
 //(AFTER SAVES)add level info preview at bottom of level view
 //(AFTER SAVES)if first time running app show tutorial by default when play pressed
-//have score based on number of swipes/swaps
 //need a new name for level 2
-//maybe have a view specifically for winning last level
+//maybe have a view specifically for winning last level, show trophy?
+//maybe have minimum score shown to player be zero?
+//try and cut down on file sizes, was >30mb
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -116,6 +119,8 @@
 //	have level pack named ipad that has larger boards
 //(?)random glint animations for gems
 //maybe have option to turn off animations winning
+//time attack game mode
+//	generated levels( i.e use templated levels and fill in colors randomly)
 //====================================================
 
 
@@ -180,6 +185,14 @@ class ViewController: UIViewController
 	
 	//true if the win animation is being shown or false otherwise
 	var showingWin = false
+	
+	//holds the button that shows the level title
+	var levelTitle : UIButton!
+	
+	//holds the minimum best score for the level
+	var levelBestScore = 0
+	
+	var levelScore = ScoreObject()
 
     override func viewDidLoad()
     {
@@ -230,6 +243,33 @@ class ViewController: UIViewController
 		NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(self.addScoreToWinDialog), userInfo: button, repeats: false)
 	}
 	
+	//calculates the minimum number of color changes needed to change from current board to winning board
+	func findMinScore() -> Int
+	{
+		let level = Level.defaultLevels( levelHandler)[ currentLevel ]
+		var score = 0
+		var index = -1
+		for winColor in level.levelData
+		{
+			index = index + 1
+			let otherColor = allGems[ index ].currentSprite
+			//need to use the cycled distance, not the absolute distance
+			//need to get the total number of gems
+			//if the one i have is bigger then the one i want, need to wrap around
+			//	( totalGems - otherColor  ) + winColor
+			let totalGems = GemColor().totalColors()
+			if ( otherColor > winColor )
+			{
+				score += ( totalGems - otherColor ) + winColor + 1
+			}
+			else
+			{
+				score += abs( winColor - otherColor )
+			}
+		}
+		return score + level.totalRows
+	}
+	
 	//function called after delay to add score to win dialog
 	func addScoreToWinDialog( timerObj : NSTimer )
 	{
@@ -237,6 +277,8 @@ class ViewController: UIViewController
 		let score = String( getScore() )
 		button.setTitle( button.currentTitle! + "\nScore:\t\(score)", forState: .Normal )
 		playGemSound( true )
+		toggleGuiButton( prevButton, doEnable: true )
+		toggleGuiButton( nextButton, doEnable: true )
 		showingWin = false
 	}
 	
@@ -301,6 +343,8 @@ class ViewController: UIViewController
 	//for starting animation loop on gems
 	func winningAnimation()
 	{
+		toggleGuiButton( prevButton, doEnable:  false )
+		toggleGuiButton( nextButton, doEnable:  false )
 		shrinkGem( 0 )
 	}
 	
@@ -381,8 +425,10 @@ class ViewController: UIViewController
 	//returns the score for the current level
 	func getScore() -> Int
 	{
-		let level = Level.defaultLevels( levelHandler)[ currentLevel ]
-		return level.totalCols * level.totalRows
+		//let level = Level.defaultLevels( levelHandler)[ currentLevel ]
+		//return level.totalCols * level.totalRows
+		let myScore = levelScore.totalScore()
+		return 10 * ( levelBestScore - myScore )
 	}
 	
 	//creates the view for the credits
@@ -549,6 +595,7 @@ class ViewController: UIViewController
 		let level = Level.defaultLevels( levelHandler)[ currentLevel ]
 		createGUI()
 		createGems( level.totalRows * level.totalRows )
+		levelBestScore = findMinScore()
 		addGemPressEvents()
 		showGemOverlay()
 		timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(self.updateTime), userInfo: nil, repeats: true)
@@ -692,7 +739,7 @@ class ViewController: UIViewController
 
 		let level = Level.defaultLevels( levelHandler )[ currentLevel ]
 
-		let levelTitle = UIButton(type: UIButtonType.Custom) as UIButton
+		levelTitle = UIButton(type: UIButtonType.Custom) as UIButton
 		levelTitle.frame = CGRectMake( CGFloat( x ), CGFloat( y - height - 2), CGFloat( screenWidth ), CGFloat( height ))
 		levelTitle.setTitle( level.levelName, forState: .Normal )
 		levelTitle.setBackgroundImage( titleImage, forState: .Normal )
@@ -738,6 +785,7 @@ class ViewController: UIViewController
 		timeCount = 0
 		gemDict.removeAll()
 		effectPlayers.removeAll()
+		levelScore = ScoreObject()
 	}
 	
 	//sets the view up for the next level
@@ -859,9 +907,8 @@ class ViewController: UIViewController
 	func showGemOverlay()
 	{
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
-		let buttonImage = UIImage( named: "button" ) as UIImage?
-		prevButton.setBackgroundImage( buttonImage, forState: .Normal )
-		prevButton.userInteractionEnabled = true
+		toggleGuiButton( prevButton , doEnable: true )
+		levelTitle.userInteractionEnabled = true
 		gemCopy.removeAll()
 		showingOverlay = true
 		let level = Level.defaultLevels( levelHandler )[ currentLevel ]
@@ -874,13 +921,21 @@ class ViewController: UIViewController
 		}
 	}
 	
+	//sets the userInteraction to doEnable provided and changes to appropriate background for button
+	func toggleGuiButton( button : UIButton!, doEnable : Bool )
+	{
+		let buttonName = ( doEnable ? "button" : "hover" )
+		let buttonImage = UIImage( named: buttonName ) as UIImage?
+		button.setBackgroundImage( buttonImage, forState: .Normal )
+		button.userInteractionEnabled = doEnable
+	}
+	
 	//hides the level overlay and changes every gem back to its old color
 	func hideGemOverlay()
 	{
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "stone")!)
-		let buttonImage = UIImage( named: "hover" ) as UIImage?
-		prevButton.setBackgroundImage( buttonImage, forState: .Normal )
-		prevButton.userInteractionEnabled = false
+		toggleGuiButton( prevButton, doEnable: false )
+		levelTitle.userInteractionEnabled = false
 		var index = -1
 		for gem in allGems
 		{
@@ -983,7 +1038,7 @@ class ViewController: UIViewController
 		let saveSprite = allGems[ firstIndex ].currentSprite
 		allGems[ firstIndex ].updateSprite( allGems[ secondIndex ].currentSprite )
 		allGems[ secondIndex ].updateSprite( saveSprite )
-		
+		levelScore.incrementMoveSwap()
 		//if the board matches the winning board then the level is complete
 		if checkWin()
 		{
@@ -999,7 +1054,6 @@ class ViewController: UIViewController
 		let size = level.totalRows
 		if index! % size == 0
 		{
-			print( "Could not swap edge")
 			return
 		}
 		swapGems( index!, secondIndex: index! - 1 )
@@ -1014,7 +1068,6 @@ class ViewController: UIViewController
 		let second = index! + 1
 		if index! % size == size - 1
 		{
-			print( "Could not swap edge")
 			return
 		}
 		swapGems( index!, secondIndex: second )
@@ -1029,7 +1082,6 @@ class ViewController: UIViewController
 		let second = index! - size
 		if second < 0
 		{
-			print( "Could not swap edge")
 			return
 		}
 		swapGems( index!, secondIndex: second )
@@ -1044,7 +1096,6 @@ class ViewController: UIViewController
 		let second = index! + size
 		if  second >= size * size
 		{
-			print( "Could not swap edge")
 			return
 		}
 		swapGems( index!, secondIndex: second)
@@ -1080,7 +1131,7 @@ class ViewController: UIViewController
 		//get the gem object pertaining to the button that was clicked and increment its sprite to next color
 		let index = gemDict[ sender as! UIButton ]
 		allGems[ index! ].changeImage()
-		
+		levelScore.incrementColorSwap()
 		//if the board matches the winning board then the level is complete
 		if checkWin()
 		{
@@ -1097,9 +1148,6 @@ class ViewController: UIViewController
 		showingOverlay = true
 		showGemOverlay()
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "winstone")!)
-		let newImage = UIImage( named: "button" ) as UIImage?
-		nextButton.setBackgroundImage( newImage, forState: .Normal )
-		nextButton.userInteractionEnabled = true
 		playSound( Sounds.winSoundBegin().name, fileType: Sounds.winSoundBegin().type )
 		delayWinTimer = NSTimer.scheduledTimerWithTimeInterval(0.4, target: self, selector: #selector(self.winningAnimation), userInfo: nil, repeats: false)
 	}

@@ -12,10 +12,11 @@ class Gem
 {
     weak var gemButton: UIButton!
     var currentSprite: Int!
-    let maxSprites = 7
+	let maxSprites : Int
     
     init( gemButton: UIButton, currentSprite: Int)
     {
+		maxSprites = GemColor().totalColors()
         self.gemButton = gemButton
         self.currentSprite = currentSprite
         self.setImage()
@@ -59,7 +60,7 @@ class Gem
     func changeImage() -> Gem
     {
         self.currentSprite = self.currentSprite + 1
-        if ( self.currentSprite > self.maxSprites )
+        if ( self.currentSprite >= self.maxSprites )
         {
             self.currentSprite = 0
         }
