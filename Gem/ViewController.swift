@@ -87,6 +87,7 @@
 //add a few more levels(AIM for 20 to 30)
 //only show 4 levels to a row in levels view
 //save progress of levels beaten/times/scores
+//	have proof of concept, need to build upon this
 //	also save mute/unmute status
 //	will probably have to use save file for particular levels?
 //(AFTER SAVES)add level info preview at bottom of level view
@@ -197,6 +198,7 @@ class ViewController: UIViewController
     override func viewDidLoad()
     {
         super.viewDidLoad()
+		loadScore()
 		readLevels()
 		playMusic()
 		createMenuView()
@@ -273,9 +275,11 @@ class ViewController: UIViewController
 	//function called after delay to add score to win dialog
 	func addScoreToWinDialog( timerObj : NSTimer )
 	{
+		let scoreVal = getScore()
 		let button = timerObj.userInfo as! UIButton
-		let score = String( getScore() )
+		let score = String( scoreVal )
 		button.setTitle( button.currentTitle! + "\nScore:\t\(score)", forState: .Normal )
+		self.saveScore( currentLevel, score: scoreVal )
 		playGemSound( true )
 		toggleGuiButton( prevButton, doEnable: true )
 		toggleGuiButton( nextButton, doEnable: true )
@@ -1187,6 +1191,10 @@ class ViewController: UIViewController
 				//print(contents)
 				//levelHandler = LevelHandler( levels: Process( input: contents ).getLevels() )
 				toReturn = Process( input: contents ).getObjects()
+				
+				//print( "CRED PROCESS" )
+				//print( Process.convertToString( toReturn ) )
+				//print( "END CRED PROCESS" )
 			}
 			catch
 			{
@@ -1201,5 +1209,55 @@ class ViewController: UIViewController
 		return toReturn
 	}
 	
+	func writeDocFile( fileName : String, fileType: String, strToWrite : String )
+	{
+		let filePath = getDocumentsDirectory().stringByAppendingPathComponent("\(fileName).\(fileType)")
+		
+		do
+		{
+			try strToWrite.writeToFile(filePath, atomically: true, encoding: NSUTF8StringEncoding)
+		}
+		catch let error as NSError
+		{
+			// failed to write file – bad permissions, bad filename, missing permissions, or more likely it can't be converted to the encoding
+			print(error.description)
+		}
+	}
+
+	func readDocFile( fileName : String, fileType: String ) -> String
+	{
+		let filePath = getDocumentsDirectory().stringByAppendingPathComponent("\(fileName).\(fileType)")
+		var toReturn = ""
+		do
+		{
+			toReturn = try NSString(contentsOfFile: filePath, encoding: NSUTF8StringEncoding) as String
+		}
+		catch let error as NSError
+		{
+			print(error.description)
+		}
+		
+		return toReturn
+	}
+	
+	//returns the directory path for where documents for this app can be saved
+	func getDocumentsDirectory() -> NSString
+	{
+		let paths = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
+		let documentsDirectory = paths[0]
+		return documentsDirectory
+	}
+	
+	func saveScore( level : Int, score: Int )
+	{
+		writeDocFile( "save" , fileType: "txt" , strToWrite: "\(level) - \(score)\n" )
+	}
+	
+	func loadScore()
+	{
+		print( "LOADING" )
+		print( readDocFile( "save" , fileType:  "txt" ) )
+		print( "DONE LOADING" )
+	}
 }
 

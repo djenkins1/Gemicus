@@ -20,14 +20,6 @@ class Process
 	func getLevels() -> Array<Level>
 	{
 		let objects = breakObjects( input )
-		/*
-		for str in objects
-		{
-		print( "<Before>")
-		print( str )
-		print( "</Before>" )
-		}
-		*/
 		return populateLevels( objects )
 	}
 	
@@ -77,15 +69,6 @@ class Process
 			
 			let level = Level( rows: Int( objDict["rows"]!)!, cols: Int( objDict[ "cols" ]! )!, author: objDict[ "author"]!, name: objDict[ "name" ]!, data: dataValues )
 			toReturn.append( level )
-
-			/*
-			print( "<object>")
-			for ( key, value) in objDict
-			{
-				print( "\(key)='\(value)'")
-			}
-			print( "</object>")
-			*/
 		}
 		return toReturn
 	}
@@ -149,6 +132,22 @@ class Process
 		}
 		return toReturn
 		
+	}
+	
+	//converts an array of dictionaries back into the save format
+	static func convertToString( objects : Array<Dictionary<String,String>> ) -> String
+	{
+		var toReturn = ""
+		for obj in objects
+		{
+			for ( key, value ) in obj
+			{
+				toReturn += ( "@\(key)\n\t\(value)\n" )
+			}
+			
+			toReturn += "#\n"
+		}
+		return toReturn
 	}
 	
 }
