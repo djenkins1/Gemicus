@@ -150,4 +150,25 @@ class Process
 		return toReturn
 	}
 	
+	//returns a dictionary wherein every dictionary in objects array is now referenced in the
+	//	returned dictionary by a key that corresponds to the key in the obj named key
+	static func extractKeys( objects : Array<Dictionary<String,String>> ) -> Dictionary<String,Dictionary<String,String>>
+	{
+		var toReturn = Dictionary<String,Dictionary<String,String>>()
+		for dict in objects
+		{
+			if let key = dict[ "key" ]
+			{
+				print( "key is \(key)" )
+				toReturn[ key ] = dict
+			}
+			else
+			{
+				print( "Missing key in \(convertToString( [ dict ]))" )
+			}
+
+		}
+		return toReturn
+	}
+	
 }

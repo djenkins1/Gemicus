@@ -15,6 +15,7 @@
 		FEBCA9291CF6861000A419E7 /* Levels.txt in Resources */ = {isa = PBXBuildFile; fileRef = FEBCA9281CF6861000A419E7 /* Levels.txt */; };
 		FEBCA92B1CF688A500A419E7 /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBCA92A1CF688A500A419E7 /* Process.swift */; };
 		FEC0F70F1D016F7B00A8C859 /* ScoreObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC0F70E1D016F7B00A8C859 /* ScoreObject.swift */; };
+		FED1AEC81D054B5D0061FE05 /* LevelSave.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED1AEC71D054B5D0061FE05 /* LevelSave.swift */; };
 		FED1C19B1CF514790084AAB2 /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED1C19A1CF514790084AAB2 /* Level.swift */; };
 		FED1C19D1CF5178A0084AAB2 /* GemColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED1C19C1CF5178A0084AAB2 /* GemColor.swift */; };
 		FEDA786A1CFEA514000A5AEB /* PDwinBegin.aif in Resources */ = {isa = PBXBuildFile; fileRef = FEDA78691CFEA514000A5AEB /* PDwinBegin.aif */; };
@@ -39,6 +40,7 @@
 		FEBCA9281CF6861000A419E7 /* Levels.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Levels.txt; sourceTree = "<group>"; };
 		FEBCA92A1CF688A500A419E7 /* Process.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
 		FEC0F70E1D016F7B00A8C859 /* ScoreObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScoreObject.swift; path = ../ScoreObject.swift; sourceTree = "<group>"; };
+		FED1AEC71D054B5D0061FE05 /* LevelSave.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelSave.swift; sourceTree = "<group>"; };
 		FED1C19A1CF514790084AAB2 /* Level.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Level.swift; sourceTree = "<group>"; };
 		FED1C19C1CF5178A0084AAB2 /* GemColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GemColor.swift; sourceTree = "<group>"; };
 		FEDA78691CFEA514000A5AEB /* PDwinBegin.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = PDwinBegin.aif; sourceTree = "<group>"; };
@@ -86,28 +88,29 @@
 		FEFB29E91CF3A46D002B2BAF /* Gem */ = {
 			isa = PBXGroup;
 			children = (
-				FEC0F70E1D016F7B00A8C859 /* ScoreObject.swift */,
+				FEFB29F11CF3A46D002B2BAF /* Assets.xcassets */,
 				FE6D33971CFE50DC0037A0C1 /* PDanimateDone.aif */,
 				FE6D33981CFE50DC0037A0C1 /* PDgemWin.aif */,
+				FEDA78691CFEA514000A5AEB /* PDwinBegin.aif */,
 				FEFD252D1CFD6E90002B74EA /* caravan.mp3 */,
 				FEFD252E1CFD6E90002B74EA /* Egypt.mp3 */,
 				FEFD25331CFD6E9D002B74EA /* DesertOfDreams.mp3 */,
 				FEFD252F1CFD6E90002B74EA /* Temple.mp3 */,
-				FEFB29EA1CF3A46D002B2BAF /* AppDelegate.swift */,
-				FEFB29EC1CF3A46D002B2BAF /* ViewController.swift */,
 				FEFB29EE1CF3A46D002B2BAF /* Main.storyboard */,
-				FEFB29F11CF3A46D002B2BAF /* Assets.xcassets */,
 				FEFB29F31CF3A46D002B2BAF /* LaunchScreen.storyboard */,
 				FEFB29F61CF3A46D002B2BAF /* Info.plist */,
+				FEFB29EA1CF3A46D002B2BAF /* AppDelegate.swift */,
+				FEFB29EC1CF3A46D002B2BAF /* ViewController.swift */,
 				FEDC227E1CF3B4C0009A6B96 /* Gem.swift */,
 				FED1C19A1CF514790084AAB2 /* Level.swift */,
 				FED1C19C1CF5178A0084AAB2 /* GemColor.swift */,
-				FEBCA9281CF6861000A419E7 /* Levels.txt */,
 				FEBCA92A1CF688A500A419E7 /* Process.swift */,
 				FE86C4631CF6DAE40063DE14 /* LevelHandler.swift */,
-				FE4375FA1CF82C3800491F4E /* Credits.txt */,
 				FE6D339B1CFE510F0037A0C1 /* Sounds.swift */,
-				FEDA78691CFEA514000A5AEB /* PDwinBegin.aif */,
+				FEC0F70E1D016F7B00A8C859 /* ScoreObject.swift */,
+				FED1AEC71D054B5D0061FE05 /* LevelSave.swift */,
+				FEBCA9281CF6861000A419E7 /* Levels.txt */,
+				FE4375FA1CF82C3800491F4E /* Credits.txt */,
 			);
 			path = Gem;
 			sourceTree = "<group>";
@@ -198,6 +201,7 @@
 				FED1C19B1CF514790084AAB2 /* Level.swift in Sources */,
 				FEC0F70F1D016F7B00A8C859 /* ScoreObject.swift in Sources */,
 				FED1C19D1CF5178A0084AAB2 /* GemColor.swift in Sources */,
+				FED1AEC81D054B5D0061FE05 /* LevelSave.swift in Sources */,
 				FEDC227F1CF3B4C0009A6B96 /* Gem.swift in Sources */,
 				FE6D339C1CFE510F0037A0C1 /* Sounds.swift in Sources */,
 				FE86C4641CF6DAE40063DE14 /* LevelHandler.swift in Sources */,

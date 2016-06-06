@@ -57,11 +57,13 @@
 //(DONE)bug with going to another view when winning animation going
 //(DONE)change credits so that two buttons per row instead of one
 //(DONE)add music/sound effect credits to credits file
-//DONE)should wrap around to first song in playlist when done
+//(DONE)should wrap around to first song in playlist when done
 //(DONE)randomize the song listings
 //(DONE)disable the fucking level title press when the showingOverlay is false
 //(DONE)only change the background on the buttons to enabled when the winning animation is over
 //(DONE)have score based on number of swipes/swaps
+//(DONE)save progress of levels beaten/times/scores
+//(SCRAP)add animations for other buttons, i.e menuButtons...
 //(DONE)views
 //      (DONE)menu
 //      (DONE)all levels view
@@ -83,19 +85,25 @@
 //mute button for muting the music
 //	should only be on main menu
 //	just pause/play the player when pressed
-//add animations for other buttons, i.e menuButtons...
 //add a few more levels(AIM for 20 to 30)
 //only show 4 levels to a row in levels view
-//save progress of levels beaten/times/scores
-//	have proof of concept, need to build upon this
-//	also save mute/unmute status
-//	will probably have to use save file for particular levels?
-//(AFTER SAVES)add level info preview at bottom of level view
-//(AFTER SAVES)if first time running app show tutorial by default when play pressed
+//save mute/unmute status
+//	also somehow need to save if the app has been opened before( maybe just use count of levelSaves)
+//add level info preview at bottom of level view
+//	(DONE)level title,best score,best time,level size(2x2,3x3...)
+//	click on preview box to go to that level
+//	change background of currently selected level button to the hover background
+//	change text of preview box to level currently selected
+//if first time running app show tutorial by default when play pressed
 //need a new name for level 2
 //maybe have a view specifically for winning last level, show trophy?
 //maybe have minimum score shown to player be zero?
+//if the new score/time is better then old, mark it on win screen
 //try and cut down on file sizes, was >30mb
+//time attack game mode
+//	generated levels( i.e use templated levels and fill in colors randomly)
+//switch from integer keys for level saves to a string key based on hexcode sequence?
+//	this will make adding levels in between current ones still use same scores even out of order
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -120,8 +128,6 @@
 //	have level pack named ipad that has larger boards
 //(?)random glint animations for gems
 //maybe have option to turn off animations winning
-//time attack game mode
-//	generated levels( i.e use templated levels and fill in colors randomly)
 //====================================================
 
 
@@ -193,12 +199,16 @@ class ViewController: UIViewController
 	//holds the minimum best score for the level
 	var levelBestScore = 0
 	
+	//holds the score object for the current level
 	var levelScore = ScoreObject()
+	
+	//holds the save information for all levels
+	var levelSaves = [ Int : LevelSave]()
 
     override func viewDidLoad()
     {
         super.viewDidLoad()
-		loadScore()
+		loadScores()
 		readLevels()
 		playMusic()
 		createMenuView()
@@ -255,10 +265,6 @@ class ViewController: UIViewController
 		{
 			index = index + 1
 			let otherColor = allGems[ index ].currentSprite
-			//need to use the cycled distance, not the absolute distance
-			//need to get the total number of gems
-			//if the one i have is bigger then the one i want, need to wrap around
-			//	( totalGems - otherColor  ) + winColor
 			let totalGems = GemColor().totalColors()
 			if ( otherColor > winColor )
 			{
@@ -279,7 +285,15 @@ class ViewController: UIViewController
 		let button = timerObj.userInfo as! UIButton
 		let score = String( scoreVal )
 		button.setTitle( button.currentTitle! + "\nScore:\t\(score)", forState: .Normal )
-		self.saveScore( currentLevel, score: scoreVal )
+		if ( levelSaves[ currentLevel ] != nil )
+		{
+			levelSaves[ currentLevel ]?.setScoreIfBetter( scoreVal ).setTimeIfBetter( timeCount )
+		}
+		else
+		{
+			levelSaves[ currentLevel ] = LevelSave( id: currentLevel ).setBestScore( scoreVal ).setBestTime( timeCount )
+		}
+		self.saveScores()
 		playGemSound( true )
 		toggleGuiButton( prevButton, doEnable: true )
 		toggleGuiButton( nextButton, doEnable: true )
@@ -663,6 +677,32 @@ class ViewController: UIViewController
 			self.view.addSubview( levelButton )
 			levelButton.addTarget( self, action: #selector( self.clickLevelButton(_:)) , forControlEvents: .TouchUpInside)
 		}
+		
+		let previewTitle = UIButton(type: UIButtonType.Custom) as UIButton
+		previewTitle.frame = CGRectMake( 0, screenSize.height * 0.8, screenSize.width , screenSize.height * 0.19 )
+		previewTitle.setBackgroundImage( titleImage, forState: .Normal )
+		previewTitle.setTitle( getLevelPreviewText( self.currentLevel ) , forState: .Normal )
+		previewTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
+		previewTitle.titleLabel!.numberOfLines = 0
+		//previewTitle.addTarget( self, action: #selector( self.backToMenu ) , forControlEvents: .TouchUpInside)
+		self.view.addSubview( previewTitle )
+	}
+	
+	func getLevelPreviewText( levelID : Int ) -> String
+	{
+		if ( levelID < 0 || levelID >= levelHandler.levels.count )
+		{
+			return "PROBLEM"
+		}
+		let levelObj = levelHandler.levels[ levelID ]
+		var score = "--"
+		var time = "--"
+		if let lvlSave = levelSaves[ levelID ]
+		{
+			score = String( lvlSave.getBestScore() )
+			time = String( lvlSave.getBestTime() )
+		}
+		return "Name: \(levelObj.levelName)\nSize: \(levelObj.totalRows)x\(levelObj.totalCols)\nScore: \(score)\nTime: \(time)"
 	}
 	
 	//when a credits button is clicked on in credits view, show the web page link associated with that button
@@ -1209,6 +1249,7 @@ class ViewController: UIViewController
 		return toReturn
 	}
 	
+	//attempts to write the string provided to the file in the documents directory with the name and type provided
 	func writeDocFile( fileName : String, fileType: String, strToWrite : String )
 	{
 		let filePath = getDocumentsDirectory().stringByAppendingPathComponent("\(fileName).\(fileType)")
@@ -1224,6 +1265,8 @@ class ViewController: UIViewController
 		}
 	}
 
+	//reads the contents of the file in the documents directory with the file name and type provided
+	//returns the contents of the file or an empty string
 	func readDocFile( fileName : String, fileType: String ) -> String
 	{
 		let filePath = getDocumentsDirectory().stringByAppendingPathComponent("\(fileName).\(fileType)")
@@ -1248,16 +1291,24 @@ class ViewController: UIViewController
 		return documentsDirectory
 	}
 	
-	func saveScore( level : Int, score: Int )
+	//saves the level scores currently in memory to the saves file
+	func saveScores()
 	{
-		writeDocFile( "save" , fileType: "txt" , strToWrite: "\(level) - \(score)\n" )
+		var toSave = [ Dictionary<String,String> ]()
+		for ( _ , lvlSave ) in levelSaves
+		{
+			toSave.append( lvlSave.convertToObject() )
+		}
+		let saveStr = Process.convertToString( toSave )
+		writeDocFile( "levelSave" , fileType: "txt" , strToWrite: "\(saveStr)" )
 	}
 	
-	func loadScore()
+	//loads the saved level scores from the saves file
+	func loadScores()
 	{
-		print( "LOADING" )
-		print( readDocFile( "save" , fileType:  "txt" ) )
-		print( "DONE LOADING" )
+		let objStr = readDocFile( "levelSave" , fileType:  "txt" )
+		print( "Loading\n\(objStr)\nDone Loading" )
+		levelSaves = LevelSave.convertObjects( Process( input : objStr ).getObjects() )
 	}
 }
 
