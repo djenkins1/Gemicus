@@ -38,7 +38,7 @@ class LevelSave
 	//sets the score to the score provided if it is better then the current bestScore, returns self
 	func setScoreIfBetter( score : Int ) -> LevelSave
 	{
-		if ( score == -1 || score > bestScore  )
+		if ( isScoreBetter( score )  )
 		{
 			setBestScore( score )
 		}
@@ -48,11 +48,23 @@ class LevelSave
 	//sets the time to the time provided if it is less than the current bestTime, returns self
 	func setTimeIfBetter( time : Int ) -> LevelSave
 	{
-		if ( bestTime == -1 || time < bestTime )
+		if ( isTimeBetter( time ) )
 		{
 				setBestTime( time )
 		}
 		return self
+	}
+	
+	//returns true if the score provided is better then the current best score or false otherwise
+	func isScoreBetter( score: Int ) -> Bool
+	{
+		return ( bestScore == -1 || score > bestScore )
+	}
+	
+	//returns true if the time provided is better then the current best time or false otherwise
+	func isTimeBetter( time : Int ) -> Bool
+	{
+		return ( bestTime == -1 || time < bestTime )
 	}
 	
 	func getBestScore() -> Int

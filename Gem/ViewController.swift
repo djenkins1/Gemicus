@@ -64,6 +64,11 @@
 //(DONE)have score based on number of swipes/swaps
 //(DONE)save progress of levels beaten/times/scores
 //(SCRAP)add animations for other buttons, i.e menuButtons...
+//(DONE)if first time running app show tutorial by default when play pressed
+//(DONE)need to save if the app has been opened before( maybe just use count of levelSaves)
+//(DONE)need a new name for level 2
+//(DONE)mute button for muting the music
+//(DONE)if the new score/time is better then old, mark it on win screen
 //(DONE)views
 //      (DONE)menu
 //      (DONE)all levels view
@@ -76,34 +81,31 @@
 //		(DONE)+1 sound effect
 //		(DONE)solitaire, make all the gems shrink to nothing one at a time
 //		(DONE)convert the gems into coins when they have scaled to 0
+//(DONE)add level info preview at bottom of level view
+//	(DONE)level title,best score,best time,level size(2x2,3x3...)
+//	(DONE)click on preview box to go to that level
+//	(DONE)change background of currently selected level button to the hover background
+//	(DONE)change text of preview box to level currently selected
 //
 //++++++++++++++++++++
 //BEFORE RELEASE
 //++++++++++++++++++++
 //maybe update the app icon so that it has a different color background then black
 //	maybe change to 2nd level on single square tile
-//mute button for muting the music
-//	should only be on main menu
-//	just pause/play the player when pressed
 //add a few more levels(AIM for 20 to 30)
-//only show 4 levels to a row in levels view
-//save mute/unmute status
-//	also somehow need to save if the app has been opened before( maybe just use count of levelSaves)
-//add level info preview at bottom of level view
-//	(DONE)level title,best score,best time,level size(2x2,3x3...)
-//	click on preview box to go to that level
-//	change background of currently selected level button to the hover background
-//	change text of preview box to level currently selected
-//if first time running app show tutorial by default when play pressed
-//need a new name for level 2
+//(TEST)only show 4 levels to a row in levels view
+//(?)save mute/unmute status in options file
+//clean up text on preview, maybe str format?
 //maybe have a view specifically for winning last level, show trophy?
 //maybe have minimum score shown to player be zero?
-//if the new score/time is better then old, mark it on win screen
 //try and cut down on file sizes, was >30mb
 //time attack game mode
 //	generated levels( i.e use templated levels and fill in colors randomly)
 //switch from integer keys for level saves to a string key based on hexcode sequence?
 //	this will make adding levels in between current ones still use same scores even out of order
+//add in comment support to text format for level/credits
+//	basically disregards all text between two symbols, maybe use ^
+//change position of mute button to corner of menu
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -196,6 +198,8 @@ class ViewController: UIViewController
 	//holds the button that shows the level title
 	var levelTitle : UIButton!
 	
+	var previewTitle : UIButton!
+	
 	//holds the minimum best score for the level
 	var levelBestScore = 0
 	
@@ -204,6 +208,11 @@ class ViewController: UIViewController
 	
 	//holds the save information for all levels
 	var levelSaves = [ Int : LevelSave]()
+	
+	//holds all the level buttons for the level view
+	var allLevelButtons = [ UIButton ]()
+	
+	var isMuted = false
 
     override func viewDidLoad()
     {
@@ -217,6 +226,10 @@ class ViewController: UIViewController
 	//adds a sound effect to the queue, creating player if it does not exist
 	func playSound( soundName: String, fileType: String)
 	{
+		if ( isMuted )
+		{
+			return
+		}
 		let urlPath = NSBundle.mainBundle().pathForResource( soundName, ofType: fileType )
 		let fileURL = NSURL(fileURLWithPath:urlPath!)
 		let player = AVPlayer( playerItem: AVPlayerItem(URL:fileURL) )
@@ -249,10 +262,28 @@ class ViewController: UIViewController
 		hideTutorial()
 		let button = createDialog()
 		button.userInteractionEnabled = false
+		var bestString = ""
 		let time = String(timeCount)//convertTimerTime( timeCount )
 		//let score = String( getScore() )
-		button.setTitle( "Time:\t\(time)" , forState: .Normal )
+		if ( levelSaves[ currentLevel ] != nil )
+		{
+			if ( levelSaves[ currentLevel ]!.isTimeBetter( timeCount ) )
+			{
+				bestString = " \(getStarText())"
+			}
+		}
+		else
+		{
+			bestString = " \(getStarText())"
+		}
+		button.setTitle( "Time:\t\(time)\(bestString)" , forState: .Normal )
 		NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(self.addScoreToWinDialog), userInfo: button, repeats: false)
+	}
+	
+	//returns true if the player has not finished any levels, i.e should be shown tutorial
+	func isFirstLoad() -> Bool
+	{
+		return ( levelSaves.count == 0 )
 	}
 	
 	//calculates the minimum number of color changes needed to change from current board to winning board
@@ -284,20 +315,33 @@ class ViewController: UIViewController
 		let scoreVal = getScore()
 		let button = timerObj.userInfo as! UIButton
 		let score = String( scoreVal )
-		button.setTitle( button.currentTitle! + "\nScore:\t\(score)", forState: .Normal )
+		var bestString = ""
 		if ( levelSaves[ currentLevel ] != nil )
 		{
-			levelSaves[ currentLevel ]?.setScoreIfBetter( scoreVal ).setTimeIfBetter( timeCount )
+			if ( levelSaves[ currentLevel ]!.isScoreBetter( scoreVal ) )
+			{
+				bestString = " \(getStarText())"
+			}
+			levelSaves[ currentLevel ]!.setScoreIfBetter( scoreVal ).setTimeIfBetter( timeCount )
 		}
 		else
 		{
 			levelSaves[ currentLevel ] = LevelSave( id: currentLevel ).setBestScore( scoreVal ).setBestTime( timeCount )
+			bestString = " \(getStarText())"
 		}
+		
+		button.setTitle( button.currentTitle! + "\nScore:\t\(score)\(bestString)", forState: .Normal )
 		self.saveScores()
 		playGemSound( true )
 		toggleGuiButton( prevButton, doEnable: true )
 		toggleGuiButton( nextButton, doEnable: true )
 		showingWin = false
+	}
+	
+	//returns a star unicode symbol
+	func getStarText() -> String
+	{
+		return "\u{2605}"
 	}
 	
 	//deletes all current elements in the view and makes the menu GUI
@@ -310,6 +354,7 @@ class ViewController: UIViewController
 		let infoButton = UIButton(type: UIButtonType.Custom) as UIButton
 		let credButton = UIButton(type: UIButtonType.Custom) as UIButton
 		let levelButton = UIButton(type: UIButtonType.Custom) as UIButton
+		let muteButton = UIButton(type: UIButtonType.Custom) as UIButton
 		
 		let screenWidth = UIScreen.mainScreen().bounds.width
 		let titleWidth = Int( ceil(screenWidth * 0.5) )
@@ -323,20 +368,24 @@ class ViewController: UIViewController
 		levelButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (2 * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
 		infoButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (3 * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
 		credButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (4 * (padding + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
+		muteButton.frame = CGRectMake( CGFloat( centerX + CGFloat( defaultWidth / 2 ) + 24 ), CGFloat( startY - 8 ), CGFloat( 48 ), CGFloat(48 ))
 		
 		let backImage = UIImage( named: "menuButton" ) as UIImage?
 		let titleImage = UIImage( named: "title" ) as UIImage?
+		let buttonImage = UIImage( named: "button" ) as UIImage?
 		gameTitle.setBackgroundImage( titleImage, forState: .Normal )
 		playButton.setBackgroundImage( backImage, forState: .Normal )
 		infoButton.setBackgroundImage( backImage, forState: .Normal )
 		credButton.setBackgroundImage( backImage, forState: .Normal )
 		levelButton.setBackgroundImage( backImage, forState: .Normal )
+		muteButton.setBackgroundImage( buttonImage, forState: .Normal )
 		
 		gameTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		playButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		infoButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		credButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		levelButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
+		muteButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		
 		gameTitle.setTitle( "Gemicus", forState: .Normal )
 		gameTitle.userInteractionEnabled = false
@@ -344,18 +393,48 @@ class ViewController: UIViewController
 		infoButton.setTitle( "Help", forState: .Normal )
 		credButton.setTitle( "Credits", forState: .Normal )
 		levelButton.setTitle( "Levels", forState: .Normal )
+		muteButton.setTitle( getMuteIconText( isMuted ) , forState: .Normal )
 		
 		self.view.addSubview(gameTitle)
 		self.view.addSubview(playButton)
 		self.view.addSubview(levelButton)
 		self.view.addSubview(infoButton)
 		self.view.addSubview(credButton)
+		self.view.addSubview( muteButton )
 		
 		playButton.addTarget( self, action: #selector( self.gotoNextLevel) , forControlEvents: .TouchUpInside)
 		levelButton.addTarget( self, action: #selector( self.gotoLevelsView) , forControlEvents: .TouchUpInside)
 		credButton.addTarget( self, action: #selector( self.gotoCreditsView) , forControlEvents: .TouchUpInside)
 		infoButton.addTarget( self, action: #selector( self.gotoHelpView) , forControlEvents: .TouchUpInside)
+		muteButton.addTarget( self, action: #selector( self.clickMuteButton(_:)) , forControlEvents: .TouchUpInside)
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
+	}
+	
+	func clickMuteButton( sender : AnyObject! )
+	{
+		if ( isMuted )
+		{
+			musicPlayer.play()
+		}
+		else
+		{
+			musicPlayer.pause()
+		}
+		
+		isMuted = !isMuted
+		(sender as! UIButton).setTitle( getMuteIconText( isMuted ) , forState: .Normal )
+	}
+	
+	func getMuteIconText( isMuted : Bool ) -> String
+	{
+		if ( isMuted )
+		{
+			return "\u{1f507}"
+		}
+		else
+		{
+			return "\u{1F50A}"
+		}
 	}
 	
 	//for starting animation loop on gems
@@ -629,7 +708,7 @@ class ViewController: UIViewController
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
 		var index = -1
 		let totalLevels = Level.defaultLevels(levelHandler).count
-		let perRow = ceil( sqrt( Double(totalLevels) ) )
+		let perRow = 4//ceil( sqrt( Double(totalLevels) ) )
 		let screenSize: CGRect = UIScreen.mainScreen().bounds
 		let screenWidth = screenSize.width * 0.8
 		let screenHeight = screenSize.height * 0.8
@@ -667,7 +746,6 @@ class ViewController: UIViewController
 			let levelButton = UIButton(type: UIButtonType.Custom) as UIButton
 			let column = ( index % Int( perRow ) )
 			let row = ( index / Int(perRow) )
-			//let x = Double( ( CGFloat(column)  * (CGFloat( squareSize ) + paddingWidth ) )  ) + startX
 			let x = centerBoxPosition(Int(perRow), index: column, boxWidth: squareSize )
 			let y = Double( ( CGFloat(row)  * (CGFloat( squareSize ) + paddingHeight ) )  ) + startY
 			levelButton.frame = CGRectMake( CGFloat( x ), CGFloat( y ), CGFloat( squareSize ), CGFloat(squareSize))
@@ -676,24 +754,29 @@ class ViewController: UIViewController
 			levelButton.setBackgroundImage( backImage, forState: .Normal )
 			self.view.addSubview( levelButton )
 			levelButton.addTarget( self, action: #selector( self.clickLevelButton(_:)) , forControlEvents: .TouchUpInside)
+			allLevelButtons.append( levelButton )
 		}
 		
-		let previewTitle = UIButton(type: UIButtonType.Custom) as UIButton
+		currentLevel = currentLevel - 1
+		toggleGuiButton( allLevelButtons[ currentLevel + 1 ], doEnable : false )
+		previewTitle = UIButton(type: UIButtonType.Custom) as UIButton
 		previewTitle.frame = CGRectMake( 0, screenSize.height * 0.8, screenSize.width , screenSize.height * 0.19 )
 		previewTitle.setBackgroundImage( titleImage, forState: .Normal )
-		previewTitle.setTitle( getLevelPreviewText( self.currentLevel ) , forState: .Normal )
+		previewTitle.setTitle( getLevelPreviewText( self.currentLevel + 1 ) , forState: .Normal )
 		previewTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		previewTitle.titleLabel!.numberOfLines = 0
-		//previewTitle.addTarget( self, action: #selector( self.backToMenu ) , forControlEvents: .TouchUpInside)
+		previewTitle.addTarget( self, action: #selector( self.clickPreviewButton(_:) ) , forControlEvents: .TouchUpInside)
 		self.view.addSubview( previewTitle )
 	}
 	
+	//returns the level preview information for the level with the id provided
 	func getLevelPreviewText( levelID : Int ) -> String
 	{
 		if ( levelID < 0 || levelID >= levelHandler.levels.count )
 		{
 			return "PROBLEM"
 		}
+		
 		let levelObj = levelHandler.levels[ levelID ]
 		var score = "--"
 		var time = "--"
@@ -702,7 +785,7 @@ class ViewController: UIViewController
 			score = String( lvlSave.getBestScore() )
 			time = String( lvlSave.getBestTime() )
 		}
-		return "Name: \(levelObj.levelName)\nSize: \(levelObj.totalRows)x\(levelObj.totalCols)\nScore: \(score)\nTime: \(time)"
+		return "Name: \(levelObj.levelName)\nSize: \(levelObj.totalRows)x\(levelObj.totalCols)\nScore: \(score)\nTime: \(time)\t->"
 	}
 	
 	//when a credits button is clicked on in credits view, show the web page link associated with that button
@@ -727,13 +810,21 @@ class ViewController: UIViewController
 			return
 		}
 		
+		toggleGuiButton( allLevelButtons[ currentLevel + 1 ], doEnable : true )
 		currentLevel = myValue - 1
+		toggleGuiButton( allLevelButtons[ currentLevel + 1 ], doEnable : false )
+		previewTitle.setTitle( getLevelPreviewText( self.currentLevel + 1 ) , forState: .Normal )
+	}
+	
+	func clickPreviewButton( sender : AnyObject )
+	{
 		gotoNextLevel()
 	}
 	
 	//removes all the elements currently in the view
 	func resetMyView()
 	{
+		allLevelButtons.removeAll()
 		timer.invalidate()
 		for view in self.view.subviews
 		{
@@ -800,7 +891,10 @@ class ViewController: UIViewController
 			return
 		}
 		showingTutorial = false
-		currentLevel = currentLevel - 1
+		if ( currentLevel >= 0 )
+		{
+			currentLevel = currentLevel - 1
+		}
 		createMenuView()
 	}
 	
@@ -839,8 +933,14 @@ class ViewController: UIViewController
 		{
 			return
 		}
+	
 		resetMyView()
 		clearBoardData()
+		if ( isFirstLoad() )
+		{
+			showingTutorial = true
+			currentLevel = -1
+		}
 		currentLevel = currentLevel + 1
 		//don't show the tutorial after the first level
 		if ( currentLevel > 0 )
@@ -861,10 +961,6 @@ class ViewController: UIViewController
 	
 	func gotoHelpView()
 	{
-		if ( showingWin )
-		{
-			return
-		}
 		showingTutorial = true
 		currentLevel = -1
 		gotoNextLevel()
