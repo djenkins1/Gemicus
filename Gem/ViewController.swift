@@ -94,9 +94,7 @@
 //	maybe change to 2nd level on single square tile
 //add a few more levels(AIM for 20 to 30)
 //(TEST)only show 4 levels to a row in levels view
-//(?)save mute/unmute status in options file
-//clean up text on preview, maybe str format?
-//maybe have a view specifically for winning last level, show trophy?
+//clean up text on levels preview, maybe str format?
 //maybe have minimum score shown to player be zero?
 //try and cut down on file sizes, was >30mb
 //time attack game mode
@@ -106,6 +104,12 @@
 //add in comment support to text format for level/credits
 //	basically disregards all text between two symbols, maybe use ^
 //change position of mute button to corner of menu
+//final win screen
+//	(TEST FOR ALL)if all levels beaten use gold trophy, otherwise silver
+//	shake/hop animation for trophy
+//	should have animations so that everything gets shown incrementally
+//	clean up dialog text with str format
+//	need easy way to get to game over screen for testing
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -129,6 +133,7 @@
 //put levels into level packs, i.e folders with names
 //	have level pack named ipad that has larger boards
 //(?)random glint animations for gems
+//(?)save mute/unmute status in options file
 //maybe have option to turn off animations winning
 //====================================================
 
@@ -707,8 +712,7 @@ class ViewController: UIViewController
 	{
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
 		var index = -1
-		let totalLevels = Level.defaultLevels(levelHandler).count
-		let perRow = 4//ceil( sqrt( Double(totalLevels) ) )
+		let perRow = 4
 		let screenSize: CGRect = UIScreen.mainScreen().bounds
 		let screenWidth = screenSize.width * 0.8
 		let screenHeight = screenSize.height * 0.8
@@ -767,6 +771,74 @@ class ViewController: UIViewController
 		previewTitle.titleLabel!.numberOfLines = 0
 		previewTitle.addTarget( self, action: #selector( self.clickPreviewButton(_:) ) , forControlEvents: .TouchUpInside)
 		self.view.addSubview( previewTitle )
+	}
+	
+	func gotoEndView()
+	{
+		currentLevel = 0
+		resetMyView()
+		createEndView()
+	}
+	
+	//creates the view for the game over screen
+	func createEndView()
+	{
+		let levelsDone = levelSaves.count
+		let levelsTotal = Level.defaultLevels( levelHandler ).count
+		let screenSize: CGRect = UIScreen.mainScreen().bounds
+		let screenHeight = screenSize.height * 0.8
+		let startY = floor( Double( screenSize.height * 0.2 ))
+		let titleImage = UIImage( named: "title" ) as UIImage?
+		let trophyImageStr = ( levelsDone == levelsTotal ? "trophy" : "silver" )
+		let trophyImage = UIImage( named: trophyImageStr ) as UIImage?
+		let defaultHeight = 32
+		let paddingHeight = screenHeight * 0.02
+		let centerX = UIScreen.mainScreen().bounds.width / 2
+		let titleWidth = 128
+		let trophySize = 160
+		
+		let roomTitle = UIButton(type: UIButtonType.Custom) as UIButton
+		roomTitle.frame = CGRectMake( CGFloat( (screenSize.width / 2) - CGFloat( titleWidth / 2 ) ), CGFloat( startY -  48 ), CGFloat( titleWidth ), CGFloat(defaultHeight ))
+		roomTitle.setBackgroundImage( titleImage, forState: .Normal )
+		roomTitle.setTitle( "You Won!" , forState: .Normal )
+		roomTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
+		roomTitle.addTarget( self, action: #selector( self.backToMenu ) , forControlEvents: .TouchUpInside)
+		self.view.addSubview( roomTitle )
+		
+		let trophyButton = UIButton(type: UIButtonType.Custom) as UIButton
+		trophyButton.frame = CGRectMake(  centerX - CGFloat( trophySize / 2 ), CGFloat( startY ) + paddingHeight , CGFloat( trophySize ), CGFloat(trophySize ))
+		trophyButton.setBackgroundImage( trophyImage, forState: .Normal )
+		trophyButton.userInteractionEnabled = false
+		self.view.addSubview( trophyButton )
+
+		let overDialog = createDialog()
+		overDialog.setTitle( "Completed: \(levelsDone)/\(levelsTotal)\nTotal Score: \(sumScores())\nTotal Time: \(sumTimes())" , forState: .Normal )
+	}
+	
+	func sumScores() -> Int
+	{
+		var toReturn = 0
+		for ( _, save ) in levelSaves
+		{
+			if ( save.getBestScore() != -1 )
+			{
+				toReturn += save.getBestScore()
+			}
+		}
+		return toReturn
+	}
+	
+	func sumTimes() -> Int
+	{
+		var toReturn = 0
+		for ( _, save ) in levelSaves
+		{
+			if ( save.getBestTime() != -1 )
+			{
+				toReturn += save.getBestTime()
+			}
+		}
+		return toReturn
 	}
 	
 	//returns the level preview information for the level with the id provided
@@ -950,8 +1022,9 @@ class ViewController: UIViewController
 		
 		if ( currentLevel >= Level.defaultLevels( levelHandler ).count )
 		{
-			currentLevel = 0
-			backToMenu()
+			//currentLevel = 0
+			//backToMenu()
+			gotoEndView()
 			return
 		}
 		gemCopy.removeAll()
