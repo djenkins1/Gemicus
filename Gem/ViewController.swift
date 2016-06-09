@@ -69,6 +69,7 @@
 //(DONE)need a new name for level 2
 //(DONE)mute button for muting the music
 //(DONE)if the new score/time is better then old, mark it on win screen
+//(DONE)change position of mute button to corner of menu
 //(DONE)views
 //      (DONE)menu
 //      (DONE)all levels view
@@ -92,10 +93,10 @@
 //++++++++++++++++++++
 //maybe update the app icon so that it has a different color background then black
 //	maybe change to 2nd level on single square tile
+//	or maybe just have one gem on block background
 //add a few more levels(AIM for 20 to 30)
 //(TEST)only show 4 levels to a row in levels view
-//clean up text on levels preview, maybe str format?
-//maybe have minimum score shown to player be zero?
+//(?)maybe have minimum score shown to player be zero?
 //try and cut down on file sizes, was >30mb
 //time attack game mode
 //	generated levels( i.e use templated levels and fill in colors randomly)
@@ -103,13 +104,12 @@
 //	this will make adding levels in between current ones still use same scores even out of order
 //add in comment support to text format for level/credits
 //	basically disregards all text between two symbols, maybe use ^
-//change position of mute button to corner of menu
 //final win screen
+//	(DONE)need easy way to get to game over screen for testing, debugEnd = true
 //	(TEST FOR ALL)if all levels beaten use gold trophy, otherwise silver
 //	shake/hop animation for trophy
 //	should have animations so that everything gets shown incrementally
-//	clean up dialog text with str format
-//	need easy way to get to game over screen for testing
+//	sound effect for entry of room?
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -218,6 +218,8 @@ class ViewController: UIViewController
 	var allLevelButtons = [ UIButton ]()
 	
 	var isMuted = false
+	
+	let debugEnd = true
 
     override func viewDidLoad()
     {
@@ -373,7 +375,8 @@ class ViewController: UIViewController
 		levelButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (2 * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
 		infoButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (3 * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
 		credButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (4 * (padding + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
-		muteButton.frame = CGRectMake( CGFloat( centerX + CGFloat( defaultWidth / 2 ) + 24 ), CGFloat( startY - 8 ), CGFloat( 48 ), CGFloat(48 ))
+		//muteButton.frame = CGRectMake( CGFloat( centerX + CGFloat( defaultWidth / 2 ) + 24 ), CGFloat( startY - 8 ), CGFloat( 48 ), CGFloat(48 ))
+		muteButton.frame = CGRectMake( CGFloat( 24 ) , CGFloat( 24 ), CGFloat( 48 ), CGFloat(48 ))
 		
 		let backImage = UIImage( named: "menuButton" ) as UIImage?
 		let titleImage = UIImage( named: "title" ) as UIImage?
@@ -813,6 +816,34 @@ class ViewController: UIViewController
 
 		let overDialog = createDialog()
 		overDialog.setTitle( "Completed: \(levelsDone)/\(levelsTotal)\nTotal Score: \(sumScores())\nTotal Time: \(sumTimes())" , forState: .Normal )
+	
+		/*
+		UIView.animateWithDuration(1.0 ,
+		                           animations:
+			{
+				trophyButton.alpha = 0.1
+			},
+		                           completion:
+			{
+				finish in
+				UIView.animateWithDuration(1.0)
+				{
+					trophyButton.alpha = 1.0
+				}
+				
+			}
+		)
+		*/
+		
+		/*
+		trophyButton.alpha = 0.5
+		UIView.animateWithDuration(1.0, delay:0, options: [.Repeat, .Autoreverse], animations: {
+			
+			trophyButton.alpha = 1.0
+			
+			}, completion: nil
+		)
+		*/
 	}
 	
 	func sumScores() -> Int
@@ -1034,6 +1065,11 @@ class ViewController: UIViewController
 	
 	func gotoHelpView()
 	{
+		if ( debugEnd )
+		{
+			gotoEndView()
+			return
+		}
 		showingTutorial = true
 		currentLevel = -1
 		gotoNextLevel()
