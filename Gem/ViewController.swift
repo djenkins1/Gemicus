@@ -69,6 +69,7 @@
 //(DONE)need a new name for level 2
 //(DONE)mute button for muting the music
 //(DONE)if the new score/time is better then old, mark it on win screen
+//(DONE)add in comment support to text format for level/credits
 //(DONE)change position of mute button to corner of menu
 //(DONE)views
 //      (DONE)menu
@@ -102,14 +103,15 @@
 //	generated levels( i.e use templated levels and fill in colors randomly)
 //switch from integer keys for level saves to a string key based on hexcode sequence?
 //	this will make adding levels in between current ones still use same scores even out of order
-//add in comment support to text format for level/credits
-//	basically disregards all text between two symbols, maybe use ^
 //final win screen
 //	(DONE)need easy way to get to game over screen for testing, debugEnd = true
 //	(TEST FOR ALL)if all levels beaten use gold trophy, otherwise silver
-//	shake/hop animation for trophy
+//	animation for trophy, maybe set its scale to really small on create then make bigger?
 //	should have animations so that everything gets shown incrementally
 //	sound effect for entry of room?
+//if a gem is the winning color in its position, set opacity lower to mark it
+//	for efficency, do this on start of level and after specific moves
+//	IMPORTANT: show/hide overlay should set all gems to 1.0 and then back to specific alpha
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -120,8 +122,7 @@
 //(*)rating system for each created/default level, posts to Gem Server. Allow rating on score screen
 //(*)search created levels by author,title...
 //change arrows on prev/next buttons to actual images?
-//	also maybe have enabled arrow images for when the buttons are actually clickable
-//hint animations for gems that are not winning color
+//maybe have enabled arrow images for when the buttons are actually clickable
 //if level button size gets below certain amount put multiple pages on all levels view
 //longer swipes should do multiple swaps of gems if possible
 //	see bookmarks, have stack overflow answer that could work here

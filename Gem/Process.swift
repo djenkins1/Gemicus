@@ -30,10 +30,25 @@ class Process
 	
 	func breakObjects( myInput : String ) -> Array<String>
 	{
+		var commentMode = false
 		var toReturn = [String]()
 		var currentString = ""
 		for i in myInput.characters
 		{
+			if ( commentMode )
+			{
+				if ( i == "^" )
+				{
+					commentMode = false
+				}
+				continue
+			}
+			else if ( i == "^" )
+			{
+				commentMode = true
+				continue
+			}
+			
 			if ( i == "#" )
 			{
 				toReturn.append( currentString )

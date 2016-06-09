@@ -88,3 +88,10 @@
 @other
 	Coin,Win,BeginWin SFX
 #
+^^^
+@title
+	This is an example of a comment
+@other
+	Could also use single ^ at begin and end of comment
+#
+^^^
