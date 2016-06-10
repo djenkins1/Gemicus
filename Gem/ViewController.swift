@@ -71,6 +71,7 @@
 //(DONE)if the new score/time is better then old, mark it on win screen
 //(DONE)add in comment support to text format for level/credits
 //(DONE)change position of mute button to corner of menu
+//(DONE)only show 4 levels to a row in levels view
 //(DONE)views
 //      (DONE)menu
 //      (DONE)all levels view
@@ -88,6 +89,11 @@
 //	(DONE)click on preview box to go to that level
 //	(DONE)change background of currently selected level button to the hover background
 //	(DONE)change text of preview box to level currently selected
+//(DONE)final win screen
+//	(DONE)need easy way to get to game over screen for testing, debugEnd = true
+//	(DONE)if all levels beaten use gold trophy, otherwise silver
+//	(DONE)animation for trophy, maybe set its scale to really small on create then make bigger?
+//	(DONE)sound effect for trophy big
 //
 //++++++++++++++++++++
 //BEFORE RELEASE
@@ -96,22 +102,18 @@
 //	maybe change to 2nd level on single square tile
 //	or maybe just have one gem on block background
 //add a few more levels(AIM for 20 to 30)
-//(TEST)only show 4 levels to a row in levels view
 //(?)maybe have minimum score shown to player be zero?
 //try and cut down on file sizes, was >30mb
 //time attack game mode
 //	generated levels( i.e use templated levels and fill in colors randomly)
-//switch from integer keys for level saves to a string key based on hexcode sequence?
+//	chooses boards of certain size, i.e 2x2,3x3...
+//		picks 5 of these size and has player finish all 5. Saves overall time/score for that pack if best?
+//(?)switch from integer keys for level saves to a string key based on hexcode sequence?
 //	this will make adding levels in between current ones still use same scores even out of order
-//final win screen
-//	(DONE)need easy way to get to game over screen for testing, debugEnd = true
-//	(TEST FOR ALL)if all levels beaten use gold trophy, otherwise silver
-//	animation for trophy, maybe set its scale to really small on create then make bigger?
-//	should have animations so that everything gets shown incrementally
-//	sound effect for entry of room?
 //if a gem is the winning color in its position, set opacity lower to mark it
 //	for efficency, do this on start of level and after specific moves
 //	IMPORTANT: show/hide overlay should set all gems to 1.0 and then back to specific alpha
+//confirm dialog for tapping on level title to go back to menu when not won yet
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -218,9 +220,11 @@ class ViewController: UIViewController
 	//holds all the level buttons for the level view
 	var allLevelButtons = [ UIButton ]()
 	
+	//this is set to true when the mute button is tapped by the player
 	var isMuted = false
 	
-	let debugEnd = true
+	//set this to true in order to go to endView without beating last level everytime
+	let debugEnd = false
 
     override func viewDidLoad()
     {
@@ -601,7 +605,7 @@ class ViewController: UIViewController
 	}
 	
 	//creates a dialog box, used for tutorial text display
-	func createDialog() -> UIButton
+	func createDialog( makeLarger : Bool = false ) -> UIButton
 	{
 		let buttonImage = UIImage( named: "title" ) as UIImage?
 		let toReturn = UIButton(type: UIButtonType.Custom) as UIButton
@@ -610,10 +614,17 @@ class ViewController: UIViewController
 		toReturn.setBackgroundImage( buttonImage, forState: .Normal )
 		toReturn.tag = 0
 		toReturn.titleLabel?.numberOfLines = 0
-		toReturn.contentEdgeInsets = UIEdgeInsetsMake(12,12,12,12)
+		toReturn.contentEdgeInsets = UIEdgeInsetsMake(16,16,16,16)
 		toReturn.setTitleColor( .blackColor(), forState: .Normal)
 		let myHeight = screenHeight * 0.12
-		toReturn.frame = CGRectMake( 0, CGFloat( screenHeight * 0.85 ), CGFloat( screenWidth ), CGFloat( myHeight ))
+		if ( makeLarger )
+		{
+			toReturn.frame = CGRectMake( 0, screenHeight * 0.8, screenWidth , screenHeight * 0.19 )
+		}
+		else
+		{
+			toReturn.frame = CGRectMake( 0, CGFloat( screenHeight * 0.85 ), CGFloat( screenWidth ), CGFloat( myHeight ))
+		}
 		self.view.addSubview( toReturn )
 		return toReturn
 	}
@@ -805,8 +816,9 @@ class ViewController: UIViewController
 		roomTitle.frame = CGRectMake( CGFloat( (screenSize.width / 2) - CGFloat( titleWidth / 2 ) ), CGFloat( startY -  48 ), CGFloat( titleWidth ), CGFloat(defaultHeight ))
 		roomTitle.setBackgroundImage( titleImage, forState: .Normal )
 		roomTitle.setTitle( "You Won!" , forState: .Normal )
+		roomTitle.contentEdgeInsets = UIEdgeInsetsMake(16,16,16,16)
 		roomTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
-		roomTitle.addTarget( self, action: #selector( self.backToMenu ) , forControlEvents: .TouchUpInside)
+		roomTitle.userInteractionEnabled = false
 		self.view.addSubview( roomTitle )
 		
 		let trophyButton = UIButton(type: UIButtonType.Custom) as UIButton
@@ -814,27 +826,27 @@ class ViewController: UIViewController
 		trophyButton.setBackgroundImage( trophyImage, forState: .Normal )
 		trophyButton.userInteractionEnabled = false
 		self.view.addSubview( trophyButton )
-
-		let overDialog = createDialog()
-		overDialog.setTitle( "Completed: \(levelsDone)/\(levelsTotal)\nTotal Score: \(sumScores())\nTotal Time: \(sumTimes())" , forState: .Normal )
-	
-		/*
+		
+		trophyButton.transform = CGAffineTransformMakeScale(0.1, 0.1)
 		UIView.animateWithDuration(1.0 ,
 		                           animations:
 			{
-				trophyButton.alpha = 0.1
+				trophyButton.transform = CGAffineTransformMakeScale(1.0, 1.0)
 			},
 		                           completion:
 			{
 				finish in
 				UIView.animateWithDuration(1.0)
 				{
-					trophyButton.alpha = 1.0
+					self.playSound( Sounds.gameOverSound().name, fileType: Sounds.gameOverSound().type )
+					let overDialog = self.createDialog( true )
+					overDialog.setTitle( "Completed: \(levelsDone)/\(levelsTotal)\nTotal Score: \(self.sumScores())\nTotal Time: \(self.sumTimes()) ->" , forState: .Normal )
+					overDialog.addTarget( self, action: #selector( self.backToMenu ) , forControlEvents: .TouchUpInside)
 				}
 				
 			}
 		)
-		*/
+		
 		
 		/*
 		trophyButton.alpha = 0.5

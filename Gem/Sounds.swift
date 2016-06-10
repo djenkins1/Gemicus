@@ -59,6 +59,11 @@ class Sounds
 		return Sounds( name: "PDwinBegin" , type: "aif" )
 	}
 	
+	static func gameOverSound() -> Sounds
+	{
+		return Sounds( name: "PDGameOver" , type: "aif" )
+	}
+	
 	static func randomMusicList() -> [Sounds]
 	{
 		var first = musicList()

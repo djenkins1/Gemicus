@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FE1F64131D0A9ECC006951A7 /* ScoreObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE1F64121D0A9ECC006951A7 /* ScoreObject.swift */; };
+		FE1F64151D0AA1FD006951A7 /* PDGameOver.aif in Resources */ = {isa = PBXBuildFile; fileRef = FE1F64141D0AA1FD006951A7 /* PDGameOver.aif */; };
 		FE4375FB1CF82C3800491F4E /* Credits.txt in Resources */ = {isa = PBXBuildFile; fileRef = FE4375FA1CF82C3800491F4E /* Credits.txt */; };
 		FE6D33991CFE50DC0037A0C1 /* PDanimateDone.aif in Resources */ = {isa = PBXBuildFile; fileRef = FE6D33971CFE50DC0037A0C1 /* PDanimateDone.aif */; };
 		FE6D339A1CFE50DC0037A0C1 /* PDgemWin.aif in Resources */ = {isa = PBXBuildFile; fileRef = FE6D33981CFE50DC0037A0C1 /* PDgemWin.aif */; };
@@ -14,7 +16,6 @@
 		FE86C4641CF6DAE40063DE14 /* LevelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE86C4631CF6DAE40063DE14 /* LevelHandler.swift */; };
 		FEBCA9291CF6861000A419E7 /* Levels.txt in Resources */ = {isa = PBXBuildFile; fileRef = FEBCA9281CF6861000A419E7 /* Levels.txt */; };
 		FEBCA92B1CF688A500A419E7 /* Process.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBCA92A1CF688A500A419E7 /* Process.swift */; };
-		FEC0F70F1D016F7B00A8C859 /* ScoreObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC0F70E1D016F7B00A8C859 /* ScoreObject.swift */; };
 		FED1AEC81D054B5D0061FE05 /* LevelSave.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED1AEC71D054B5D0061FE05 /* LevelSave.swift */; };
 		FED1C19B1CF514790084AAB2 /* Level.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED1C19A1CF514790084AAB2 /* Level.swift */; };
 		FED1C19D1CF5178A0084AAB2 /* GemColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FED1C19C1CF5178A0084AAB2 /* GemColor.swift */; };
@@ -32,6 +33,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FE1F64121D0A9ECC006951A7 /* ScoreObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScoreObject.swift; sourceTree = "<group>"; };
+		FE1F64141D0AA1FD006951A7 /* PDGameOver.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = PDGameOver.aif; sourceTree = "<group>"; };
 		FE4375FA1CF82C3800491F4E /* Credits.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Credits.txt; sourceTree = "<group>"; };
 		FE6D33971CFE50DC0037A0C1 /* PDanimateDone.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = PDanimateDone.aif; sourceTree = "<group>"; };
 		FE6D33981CFE50DC0037A0C1 /* PDgemWin.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = PDgemWin.aif; sourceTree = "<group>"; };
@@ -39,7 +42,6 @@
 		FE86C4631CF6DAE40063DE14 /* LevelHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelHandler.swift; sourceTree = "<group>"; };
 		FEBCA9281CF6861000A419E7 /* Levels.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Levels.txt; sourceTree = "<group>"; };
 		FEBCA92A1CF688A500A419E7 /* Process.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Process.swift; sourceTree = "<group>"; };
-		FEC0F70E1D016F7B00A8C859 /* ScoreObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ScoreObject.swift; path = ../ScoreObject.swift; sourceTree = "<group>"; };
 		FED1AEC71D054B5D0061FE05 /* LevelSave.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelSave.swift; sourceTree = "<group>"; };
 		FED1C19A1CF514790084AAB2 /* Level.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Level.swift; sourceTree = "<group>"; };
 		FED1C19C1CF5178A0084AAB2 /* GemColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GemColor.swift; sourceTree = "<group>"; };
@@ -90,6 +92,7 @@
 			children = (
 				FEFB29F11CF3A46D002B2BAF /* Assets.xcassets */,
 				FE6D33971CFE50DC0037A0C1 /* PDanimateDone.aif */,
+				FE1F64141D0AA1FD006951A7 /* PDGameOver.aif */,
 				FE6D33981CFE50DC0037A0C1 /* PDgemWin.aif */,
 				FEDA78691CFEA514000A5AEB /* PDwinBegin.aif */,
 				FEFD252D1CFD6E90002B74EA /* caravan.mp3 */,
@@ -107,7 +110,7 @@
 				FEBCA92A1CF688A500A419E7 /* Process.swift */,
 				FE86C4631CF6DAE40063DE14 /* LevelHandler.swift */,
 				FE6D339B1CFE510F0037A0C1 /* Sounds.swift */,
-				FEC0F70E1D016F7B00A8C859 /* ScoreObject.swift */,
+				FE1F64121D0A9ECC006951A7 /* ScoreObject.swift */,
 				FED1AEC71D054B5D0061FE05 /* LevelSave.swift */,
 				FEBCA9281CF6861000A419E7 /* Levels.txt */,
 				FE4375FA1CF82C3800491F4E /* Credits.txt */,
@@ -184,6 +187,7 @@
 				FEFB29F21CF3A46D002B2BAF /* Assets.xcassets in Resources */,
 				FEFB29F01CF3A46D002B2BAF /* Main.storyboard in Resources */,
 				FEFD25301CFD6E90002B74EA /* caravan.mp3 in Resources */,
+				FE1F64151D0AA1FD006951A7 /* PDGameOver.aif in Resources */,
 				FEBCA9291CF6861000A419E7 /* Levels.txt in Resources */,
 				FEDA786A1CFEA514000A5AEB /* PDwinBegin.aif in Resources */,
 			);
@@ -199,9 +203,9 @@
 				FEFB29ED1CF3A46D002B2BAF /* ViewController.swift in Sources */,
 				FEFB29EB1CF3A46D002B2BAF /* AppDelegate.swift in Sources */,
 				FED1C19B1CF514790084AAB2 /* Level.swift in Sources */,
-				FEC0F70F1D016F7B00A8C859 /* ScoreObject.swift in Sources */,
 				FED1C19D1CF5178A0084AAB2 /* GemColor.swift in Sources */,
 				FED1AEC81D054B5D0061FE05 /* LevelSave.swift in Sources */,
+				FE1F64131D0A9ECC006951A7 /* ScoreObject.swift in Sources */,
 				FEDC227F1CF3B4C0009A6B96 /* Gem.swift in Sources */,
 				FE6D339C1CFE510F0037A0C1 /* Sounds.swift in Sources */,
 				FE86C4641CF6DAE40063DE14 /* LevelHandler.swift in Sources */,
