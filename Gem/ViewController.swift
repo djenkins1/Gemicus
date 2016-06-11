@@ -107,14 +107,23 @@
 //(?)maybe have minimum score shown to player be zero?
 //try and cut down on file sizes, was >30mb
 //time attack game mode
-//	generated levels( i.e use templated levels and fill in colors randomly)
-//		have levels started in TimeLevels.txt, just read them in and buckets based on size
+//	(DONE)generated levels( i.e use templated levels and fill in colors randomly)
+//	(DONE)have levels started in TimeLevels.txt, just read them in and buckets based on size
 //	chooses boards of certain size, i.e 2x2,3x3...
+//		should have room to choose level sizes, i.e buttons with 2x2, 3x3, 4x4, ALL
 //		picks 5 of these size and has player finish all 5. Saves overall time/score for that pack if best?
 //	for best code reuse, add in boolean to check if saving after every level and set to false if time attack
-//		for getting the levels, swap out the levelHandler with another levelHandler with the corresponding levels
+//		(DONE)for getting the levels, swap out the levelHandler with another levelHandler with the corresponding levels
+//		do not show the star symbol or compare scores for level over screen
+//	would also have to change gameOver screen slightly?
+//		show the total completed/scoreSum/timeSum as normally
+//			need to have completed be same as totalLevels
+//	save the sum of score/time at end to another saves file into specific key based on size of boards
+//		would have to read this in and compare it
+//	back button should take back to menu in this gamemode instead and clear out old data
 //(?)switch from integer keys for level saves to a string key based on hexcode sequence?
 //	this will make adding levels in between current ones still use same scores even out of order
+//Ease in opacity when winning
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -226,12 +235,14 @@ class ViewController: UIViewController
 	
 	//set this to true in order to go to endView without beating last level everytime
 	let debugEnd = false
+	
+	//this is true if the player is in time attack game mode or false otherwise
+	var timeAttackMode = false
 
     override func viewDidLoad()
     {
         super.viewDidLoad()
 		loadScores()
-		readLevels()
 		playMusic()
 		createMenuView()
     }
@@ -416,7 +427,7 @@ class ViewController: UIViewController
 		self.view.addSubview(credButton)
 		self.view.addSubview( muteButton )
 		
-		playButton.addTarget( self, action: #selector( self.gotoNextLevel) , forControlEvents: .TouchUpInside)
+		playButton.addTarget( self, action: #selector( self.clickPlayButton) , forControlEvents: .TouchUpInside)
 		levelButton.addTarget( self, action: #selector( self.gotoLevelsView) , forControlEvents: .TouchUpInside)
 		credButton.addTarget( self, action: #selector( self.gotoCreditsView) , forControlEvents: .TouchUpInside)
 		infoButton.addTarget( self, action: #selector( self.gotoHelpView) , forControlEvents: .TouchUpInside)
@@ -439,6 +450,16 @@ class ViewController: UIViewController
 		(sender as! UIButton).setTitle( getMuteIconText( isMuted ) , forState: .Normal )
 	}
 	
+	func clickPlayButton()
+	{
+		timeAttackMode = true
+		readLevels( true )
+		levelHandler.stripLevelsNotOfSize( 2, cols: 2 )
+		gotoNextLevel()
+		
+	}
+	
+	//returns the corresponding unicode character for the mute state provided
 	func getMuteIconText( isMuted : Bool ) -> String
 	{
 		if ( isMuted )
@@ -693,7 +714,9 @@ class ViewController: UIViewController
 		{
 			return
 		}
+		
 		currentLevel = 0
+		readLevels( false )
 		resetMyView()
 		createLevelsView()
 	}
@@ -796,6 +819,21 @@ class ViewController: UIViewController
 		createEndView()
 	}
 	
+	//returns the trophy image based on how many levels were completed
+	func getTrophyImage( levelsDone : Int, levelsTotal : Int ) -> UIImage
+	{
+		var trophyImageStr = ""
+		if ( timeAttackMode )
+		{
+			trophyImageStr = "trophy"
+		}
+		else
+		{
+			trophyImageStr = ( levelsDone == levelsTotal ? "trophy" : "silver" )
+		}
+		return ( UIImage( named: trophyImageStr ) as UIImage? )!
+	}
+	
 	//creates the view for the game over screen
 	func createEndView()
 	{
@@ -805,8 +843,7 @@ class ViewController: UIViewController
 		let screenHeight = screenSize.height * 0.8
 		let startY = floor( Double( screenSize.height * 0.2 ))
 		let titleImage = UIImage( named: "title" ) as UIImage?
-		let trophyImageStr = ( levelsDone == levelsTotal ? "trophy" : "silver" )
-		let trophyImage = UIImage( named: trophyImageStr ) as UIImage?
+		let trophyImage = getTrophyImage( levelsDone, levelsTotal: levelsTotal )
 		let defaultHeight = 32
 		let paddingHeight = screenHeight * 0.02
 		let centerX = UIScreen.mainScreen().bounds.width / 2
@@ -1420,9 +1457,10 @@ class ViewController: UIViewController
 	}
 	
 	//reads the level data from the levels file and puts it into the level handler
-	func readLevels()
+	func readLevels( isTimeAttack : Bool = false )
 	{
-		if let filepath = NSBundle.mainBundle().pathForResource("Levels", ofType: "txt")
+		let myName = ( isTimeAttack ? "TimeLevels" : "Levels" )
+		if let filepath = NSBundle.mainBundle().pathForResource( myName , ofType: "txt")
 		{
 			do
 			{
@@ -1534,6 +1572,8 @@ class ViewController: UIViewController
 		levelSaves = LevelSave.convertObjects( Process( input : objStr ).getObjects() )
 	}
 	
+	//for every gem button, sets the alpha lower if the gem is already the winning color
+	//if isOverlay is true, all gems are set to normal alpha of 1.0
 	func setGemsOpacity( isOverlay : Bool = false )
 	{
 		var index = -1
