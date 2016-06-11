@@ -23,6 +23,18 @@
 	white	red
 #
 @name
+	Green Square
+@author
+	Dilan Jenkins
+@rows
+	2
+@cols
+	2
+@data
+	green	green
+	green	green
+#
+@name
 	Red Circle
 @author
 	Dilan Jenkins
@@ -101,6 +113,19 @@
 	white	purple	white
 #
 @name
+	Columns
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	white	black	white
+	white	black	white
+	white	black	white
+#
+@name
 	Yellow H
 @author
 	Dilan Jenkins
@@ -109,9 +134,9 @@
 @cols
 	3
 @data
-yellow	red		yellow
-yellow	yellow	yellow
-yellow	red		yellow
+	yellow	red		yellow
+	yellow	yellow	yellow
+	yellow	red		yellow
 #
 @name
 	Red Corners
@@ -139,21 +164,6 @@ yellow	red		yellow
 	purple	black	black	purple
 	purple	black	black	purple
 	purple	purple	purple	purple
-#
-@name
-	Green Corners
-@author
-	Dilan Jenkins
-@rows
-	5
-@cols
-	5
-@data
-	green	green	white	green	green
-	green	white	red		white	green
-	white	red		red		red		white
-	green	white	red		white	green
-	green	green	white	green	green
 #
 @name
 	Black Flag
@@ -199,4 +209,64 @@ yellow	red		yellow
 	black	yellow	yellow	yellow	black
 	black	black	black	yellow	black
 	black	yellow	yellow	yellow	black
+#
+@name
+	Green Corners
+@author
+	Dilan Jenkins
+@rows
+	5
+@cols
+	5
+@data
+	green	green	white	green	green
+	green	white	red		white	green
+	white	red		red		red		white
+	green	white	red		white	green
+	green	green	white	green	green
+#
+@name
+	Metal Grate
+@author
+	Dilan Jenkins
+@rows
+	5
+@cols
+	5
+@data
+	white	white	white	white	white
+	white	black	white	black	white
+	white	black	white	black	white
+	white	black	white	black	white
+	white	white	white	white	white
+#
+@name
+	Islands
+@author
+	Dilan Jenkins
+@rows
+	5
+@cols
+	5
+@data
+	blue	blue	blue	blue	blue
+	blue	yellow	blue	yellow	blue
+	blue	blue	blue	blue	blue
+	blue	yellow	blue	yellow	blue
+	blue	blue	blue	blue	blue
+#
+@name
+	Red Star
+@author
+	Dilan Jenkins
+@rows
+	5
+@cols
+	5
+@data
+	white	white	red		white	white
+	white	white	red		white	white
+	red		red		red		red		red
+	white	white	red		white	white
+	white	white	red		white	white
 #

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FE0CB99D1D0BA2F5008F91C9 /* TimeLevels.txt in Resources */ = {isa = PBXBuildFile; fileRef = FE0CB99C1D0BA2F5008F91C9 /* TimeLevels.txt */; };
 		FE1F64131D0A9ECC006951A7 /* ScoreObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE1F64121D0A9ECC006951A7 /* ScoreObject.swift */; };
 		FE1F64151D0AA1FD006951A7 /* PDGameOver.aif in Resources */ = {isa = PBXBuildFile; fileRef = FE1F64141D0AA1FD006951A7 /* PDGameOver.aif */; };
 		FE4375FB1CF82C3800491F4E /* Credits.txt in Resources */ = {isa = PBXBuildFile; fileRef = FE4375FA1CF82C3800491F4E /* Credits.txt */; };
@@ -33,6 +34,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FE0CB99C1D0BA2F5008F91C9 /* TimeLevels.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TimeLevels.txt; sourceTree = "<group>"; };
 		FE1F64121D0A9ECC006951A7 /* ScoreObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScoreObject.swift; sourceTree = "<group>"; };
 		FE1F64141D0AA1FD006951A7 /* PDGameOver.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = PDGameOver.aif; sourceTree = "<group>"; };
 		FE4375FA1CF82C3800491F4E /* Credits.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Credits.txt; sourceTree = "<group>"; };
@@ -113,6 +115,7 @@
 				FE1F64121D0A9ECC006951A7 /* ScoreObject.swift */,
 				FED1AEC71D054B5D0061FE05 /* LevelSave.swift */,
 				FEBCA9281CF6861000A419E7 /* Levels.txt */,
+				FE0CB99C1D0BA2F5008F91C9 /* TimeLevels.txt */,
 				FE4375FA1CF82C3800491F4E /* Credits.txt */,
 			);
 			path = Gem;
@@ -185,6 +188,7 @@
 				FE4375FB1CF82C3800491F4E /* Credits.txt in Resources */,
 				FEFB29F51CF3A46D002B2BAF /* LaunchScreen.storyboard in Resources */,
 				FEFB29F21CF3A46D002B2BAF /* Assets.xcassets in Resources */,
+				FE0CB99D1D0BA2F5008F91C9 /* TimeLevels.txt in Resources */,
 				FEFB29F01CF3A46D002B2BAF /* Main.storyboard in Resources */,
 				FEFD25301CFD6E90002B74EA /* caravan.mp3 in Resources */,
 				FE1F64151D0AA1FD006951A7 /* PDGameOver.aif in Resources */,

@@ -72,6 +72,9 @@
 //(DONE)add in comment support to text format for level/credits
 //(DONE)change position of mute button to corner of menu
 //(DONE)only show 4 levels to a row in levels view
+//(DONE)add a few more levels(AIM for 20 to 30)
+//(DONE)if a gem is the winning color in its position, set opacity lower to mark it
+//(DONE)make the back button go to the levels menu instead of straight to menu, remove userInteraction from level title
 //(DONE)views
 //      (DONE)menu
 //      (DONE)all levels view
@@ -101,19 +104,17 @@
 //maybe update the app icon so that it has a different color background then black
 //	maybe change to 2nd level on single square tile
 //	or maybe just have one gem on block background
-//add a few more levels(AIM for 20 to 30)
 //(?)maybe have minimum score shown to player be zero?
 //try and cut down on file sizes, was >30mb
 //time attack game mode
 //	generated levels( i.e use templated levels and fill in colors randomly)
+//		have levels started in TimeLevels.txt, just read them in and buckets based on size
 //	chooses boards of certain size, i.e 2x2,3x3...
 //		picks 5 of these size and has player finish all 5. Saves overall time/score for that pack if best?
+//	for best code reuse, add in boolean to check if saving after every level and set to false if time attack
+//		for getting the levels, swap out the levelHandler with another levelHandler with the corresponding levels
 //(?)switch from integer keys for level saves to a string key based on hexcode sequence?
 //	this will make adding levels in between current ones still use same scores even out of order
-//if a gem is the winning color in its position, set opacity lower to mark it
-//	for efficency, do this on start of level and after specific moves
-//	IMPORTANT: show/hide overlay should set all gems to 1.0 and then back to specific alpha
-//confirm dialog for tapping on level title to go back to menu when not won yet
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -983,7 +984,7 @@ class ViewController: UIViewController
 		prevButton.frame = CGRectMake( CGFloat( centerX - ( width / 2 ) - buttonWidth - 8  ), CGFloat( y ), CGFloat( buttonWidth ), CGFloat(height))
 		prevButton.setTitle( "<-" , forState: .Normal )
 		prevButton.setBackgroundImage( hiddenImage, forState: .Normal )
-		prevButton.addTarget( self, action: #selector( self.backToMenu) , forControlEvents: .TouchUpInside)
+		prevButton.addTarget( self, action: #selector( self.gotoLevelsView) , forControlEvents: .TouchUpInside)
 		prevButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		prevButton.userInteractionEnabled = false
 		self.view.addSubview(prevButton)
@@ -994,8 +995,9 @@ class ViewController: UIViewController
 		levelTitle.frame = CGRectMake( CGFloat( x ), CGFloat( y - height - 2), CGFloat( screenWidth ), CGFloat( height ))
 		levelTitle.setTitle( level.levelName, forState: .Normal )
 		levelTitle.setBackgroundImage( titleImage, forState: .Normal )
-		levelTitle.addTarget( self, action: #selector( self.gotoLevelsView) , forControlEvents: .TouchUpInside)
+		//levelTitle.addTarget( self, action: #selector( self.gotoLevelsView) , forControlEvents: .TouchUpInside)
 		levelTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
+		levelTitle.userInteractionEnabled = false
 		self.view.addSubview( levelTitle )
 	}
 	
@@ -1092,6 +1094,7 @@ class ViewController: UIViewController
 	//returns false if currently showing the level overlay
 	func checkWin() -> Bool
 	{
+		setGemsOpacity( showingOverlay )
 		if ( showingOverlay )
 		{
 				return false
@@ -1181,6 +1184,7 @@ class ViewController: UIViewController
 			gemCopy.append( gem.currentSprite )
 			gem.updateSprite( level.levelData[ index ] )
 		}
+		setGemsOpacity( true )
 	}
 	
 	//sets the userInteraction to doEnable provided and changes to appropriate background for button
@@ -1206,6 +1210,7 @@ class ViewController: UIViewController
 		}
 		showingOverlay = false
 		gemCopy.removeAll()
+		setGemsOpacity( false )
 	}
 
 	//changes the text within the timer to the correct time
@@ -1527,6 +1532,24 @@ class ViewController: UIViewController
 		let objStr = readDocFile( "levelSave" , fileType:  "txt" )
 		print( "Loading\n\(objStr)\nDone Loading" )
 		levelSaves = LevelSave.convertObjects( Process( input : objStr ).getObjects() )
+	}
+	
+	func setGemsOpacity( isOverlay : Bool = false )
+	{
+		var index = -1
+		let levelData = Level.defaultLevels( levelHandler )[ currentLevel ].levelData
+		for gem in allGems
+		{
+			index = index + 1
+			if isOverlay || levelData[ index ] != gem.currentSprite
+			{
+				gem.gemButton.alpha = 1.0
+			}
+			else
+			{
+				gem.gemButton.alpha = 0.5
+			}
+		}
 	}
 }
 

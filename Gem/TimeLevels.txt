@@ -1,0 +1,61 @@
+@name
+	Stripes
+@author
+	Dilan Jenkins
+@rows
+	2
+@cols
+	2
+@data
+	blue	white
+	blue	white
+#
+@name
+	Stripes
+@author
+	Dilan Jenkins
+@rows
+	2
+@cols
+	2
+@data
+	blue	blue
+	white	white
+#
+@name
+	Bevels
+@author
+	Dilan Jenkins
+@rows
+	2
+@cols
+	2
+@data
+	red		white
+	white	red
+#
+@name
+	Square
+@author
+	Dilan Jenkins
+@rows
+	2
+@cols
+	2
+@data
+	green	green
+	green	green
+#
+@name
+	The T
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	red		red		red
+	white	red		white
+	white	red		white
+#
