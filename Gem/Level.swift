@@ -10,11 +10,12 @@ import Foundation
 
 class Level
 {
-    var totalRows = 0
-    var levelAuthor = ""
-    var levelName = ""
-    var levelData = [Int]()
-	var totalCols = 0
+    private(set) var totalRows = 0
+    private(set) var levelAuthor = ""
+    private(set) var levelName = ""
+	var levelData = [Int]()
+    private(set) var totalCols = 0
+    private(set) var levelKey = ""
 
 	static func defaultLevels( handler : LevelHandler ) -> Array<Level>
     {
@@ -28,5 +29,11 @@ class Level
         self.levelAuthor = author
         self.levelName = name
         self.levelData = data
+	}
+	
+	func withKey( key : String ) -> Level
+	{
+		self.levelKey = key
+		return self
 	}
 }

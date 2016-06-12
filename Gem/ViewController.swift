@@ -75,6 +75,10 @@
 //(DONE)add a few more levels(AIM for 20 to 30)
 //(DONE)if a gem is the winning color in its position, set opacity lower to mark it
 //(DONE)make the back button go to the levels menu instead of straight to menu, remove userInteraction from level title
+//(FIXED)No longer saves score past first level in normal game mode
+//(DONE)switch from integer keys for level saves to a string key based on hexcode sequence?
+//(SCRAP)maybe have minimum score shown to player be zero?
+//(FIXED)time attack mode winds up with tutorial always
 //(DONE)views
 //      (DONE)menu
 //      (DONE)all levels view
@@ -104,7 +108,6 @@
 //maybe update the app icon so that it has a different color background then black
 //	maybe change to 2nd level on single square tile
 //	or maybe just have one gem on block background
-//(?)maybe have minimum score shown to player be zero?
 //try and cut down on file sizes, was >30mb
 //time attack game mode
 //	(DONE)generated levels( i.e use templated levels and fill in colors randomly)
@@ -113,16 +116,14 @@
 //	(DONE)do not show the star symbol or compare scores for level over screen
 //	(DONE)show the total completed/scoreSum/timeSum as normally
 //	(DONE)need to have completed be same as totalLevels
+//	(DONE)back button should take back to menu in this gamemode instead and clear out old data
 //	chooses boards of certain size, i.e 2x2,3x3...
 //		should have room to choose level sizes, i.e buttons with 2x2, 3x3, 4x4, ALL
 //		picks 5 of these size and has player finish all 5. Saves overall time/score for that pack if best?
 //	save the sum of score/time at end to another saves file into specific key based on size of boards
-//		would have to read this in and compare it
-//	back button should take back to menu in this gamemode instead and clear out old data
-//(?)switch from integer keys for level saves to a string key based on hexcode sequence?
-//	this will make adding levels in between current ones still use same scores even out of order
+//		TODO: NEED SEPERATE dict for pack saves versus level saves and need to load/save differently
+//		TODO: NEED TO ASSIGN PACK NAME to levelHandler BASED ON CHOSEN GAME SIZES
 //Ease in opacity when winning
-//time attack mode winds up with tutorial always
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -224,7 +225,7 @@ class ViewController: UIViewController
 	var levelScore = ScoreObject()
 	
 	//holds the save information for all levels
-	var levelSaves = [ Int : LevelSave]()
+	var levelSaves = [ String : LevelSave]()
 	
 	//holds all the level buttons for the level view
 	var allLevelButtons = [ UIButton ]()
@@ -289,9 +290,9 @@ class ViewController: UIViewController
 		//let score = String( getScore() )
 		if ( !timeAttackMode )
 		{
-			if ( levelSaves[ currentLevel ] != nil )
+			if ( levelSaves[ getLevelFromCurrent()!.levelKey ] != nil )
 			{
-				if ( levelSaves[ currentLevel ]!.isTimeBetter( timeCount ) )
+				if ( levelSaves[ getLevelFromCurrent()!.levelKey ]!.isTimeBetter( timeCount ) )
 				{
 					bestString = " \(getStarText())"
 				}
@@ -309,7 +310,8 @@ class ViewController: UIViewController
 	//returns true if the player has not finished any levels, i.e should be shown tutorial
 	func isFirstLoad() -> Bool
 	{
-		return ( levelSaves.count == 0 )
+		//return ( levelSaves.count == 0 )
+		return !( docFileExists( "levelSave" , fileType: "txt" ) || docFileExists( "timeSave" , fileType: "txt" ) )
 	}
 	
 	//calculates the minimum number of color changes needed to change from current board to winning board
@@ -344,9 +346,9 @@ class ViewController: UIViewController
 		var bestString = ""
 		if !timeAttackMode
 		{
-			if ( levelSaves[ currentLevel ] != nil )
+			if ( levelSaves[ getLevelFromCurrent()!.levelKey ] != nil )
 			{
-				if ( levelSaves[ currentLevel ]!.isScoreBetter( scoreVal ) )
+				if ( levelSaves[ getLevelFromCurrent()!.levelKey ]!.isScoreBetter( scoreVal ) )
 				{
 					bestString = " \(getStarText())"
 				}
@@ -356,17 +358,21 @@ class ViewController: UIViewController
 			{
 				bestString = " \(getStarText())"
 			}
-			
-			saveScores()
 		}
 		
-		if ( levelSaves[ currentLevel ] == nil )
+		if ( levelSaves[ getLevelFromCurrent()!.levelKey ] == nil )
 		{
-			levelSaves[ currentLevel ] = LevelSave( id: currentLevel ).setBestScore( scoreVal ).setBestTime( timeCount )
+			levelSaves[ getLevelFromCurrent()!.levelKey ] = LevelSave( id: getLevelFromCurrent()!.levelKey ).setBestScore( scoreVal ).setBestTime( timeCount )
 		}
 		else
 		{
-			levelSaves[ currentLevel ]!.setScoreIfBetter( scoreVal ).setTimeIfBetter( timeCount )
+			levelSaves[ getLevelFromCurrent()!.levelKey ]!.setScoreIfBetter( scoreVal ).setTimeIfBetter( timeCount )
+		}
+		
+		//this must be performed after the levelSaves have been updated
+		if ( !timeAttackMode )
+		{
+			saveScores()
 		}
 		
 		button.setTitle( button.currentTitle! + "\nScore:\t\(score)\(bestString)", forState: .Normal )
@@ -374,6 +380,11 @@ class ViewController: UIViewController
 		toggleGuiButton( prevButton, doEnable: true )
 		toggleGuiButton( nextButton, doEnable: true )
 		showingWin = false
+	}
+	
+	func getLevelFromCurrent() -> Level?
+	{
+		return Level.defaultLevels( levelHandler)[ currentLevel ]
 	}
 	
 	//returns a star unicode symbol
@@ -730,6 +741,7 @@ class ViewController: UIViewController
 			return
 		}
 		
+		timeAttackMode = false
 		currentLevel = 0
 		loadScores()
 		readLevels( false )
@@ -881,6 +893,8 @@ class ViewController: UIViewController
 		trophyButton.userInteractionEnabled = false
 		self.view.addSubview( trophyButton )
 		
+		saveTimeScores()
+		
 		trophyButton.transform = CGAffineTransformMakeScale(0.1, 0.1)
 		UIView.animateWithDuration(1.0 ,
 		                           animations:
@@ -913,6 +927,27 @@ class ViewController: UIViewController
 		*/
 	}
 	
+	//updates and saves the scores for the time attack mode if timeAttackMode is true
+	func saveTimeScores()
+	{
+		if ( !timeAttackMode )
+		{
+			return
+		}
+		
+		if ( levelSaves[ levelHandler.packName ] != nil )
+		{
+			levelSaves[ levelHandler.packName ]!.setScoreIfBetter( self.sumScores() ).setTimeIfBetter( self.sumTimes() )
+		}
+		else
+		{
+			levelSaves[ levelHandler.packName ] = LevelSave( id: levelHandler.packName ).setBestScore( self.sumScores() ).setBestTime( self.sumTimes() )
+		}
+		
+		saveScores()
+	}
+	
+	//returns the sum of all the scores in the current levelSaves
 	func sumScores() -> Int
 	{
 		var toReturn = 0
@@ -950,7 +985,7 @@ class ViewController: UIViewController
 		let levelObj = levelHandler.levels[ levelID ]
 		var score = "--"
 		var time = "--"
-		if let lvlSave = levelSaves[ levelID ]
+		if let lvlSave = levelSaves[ Level.defaultLevels( levelHandler )[ levelID ].levelKey ]
 		{
 			score = String( lvlSave.getBestScore() )
 			time = String( lvlSave.getBestTime() )
@@ -1037,7 +1072,7 @@ class ViewController: UIViewController
 		prevButton.frame = CGRectMake( CGFloat( centerX - ( width / 2 ) - buttonWidth - 8  ), CGFloat( y ), CGFloat( buttonWidth ), CGFloat(height))
 		prevButton.setTitle( "<-" , forState: .Normal )
 		prevButton.setBackgroundImage( hiddenImage, forState: .Normal )
-		prevButton.addTarget( self, action: #selector( self.gotoLevelsView) , forControlEvents: .TouchUpInside)
+		prevButton.addTarget( self, action: #selector( self.clickPrevButton) , forControlEvents: .TouchUpInside)
 		prevButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		prevButton.userInteractionEnabled = false
 		self.view.addSubview(prevButton)
@@ -1052,6 +1087,19 @@ class ViewController: UIViewController
 		levelTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
 		levelTitle.userInteractionEnabled = false
 		self.view.addSubview( levelTitle )
+	}
+	
+	//decides whether to go back to menu or to levels view based on game mode
+	func clickPrevButton()
+	{
+		if ( timeAttackMode )
+		{
+			backToMenu()
+		}
+		else
+		{
+			gotoLevelsView()
+		}
 	}
 	
 	//go back to the menu
@@ -1121,8 +1169,6 @@ class ViewController: UIViewController
 		
 		if ( currentLevel >= Level.defaultLevels( levelHandler ).count )
 		{
-			//currentLevel = 0
-			//backToMenu()
 			gotoEndView()
 			return
 		}
@@ -1541,6 +1587,14 @@ class ViewController: UIViewController
 			print(error.description)
 		}
 	}
+	
+	//returns true if the file with the name and type provided exists in the documents directory or false otherwise
+	func docFileExists( fileName : String , fileType: String ) -> Bool
+	{
+		let filePath = getDocumentsDirectory().stringByAppendingPathComponent("\(fileName).\(fileType)")
+		let manager = NSFileManager.defaultManager()
+		return manager.fileExistsAtPath( filePath )
+	}
 
 	//reads the contents of the file in the documents directory with the file name and type provided
 	//returns the contents of the file or an empty string
@@ -1571,21 +1625,38 @@ class ViewController: UIViewController
 	//saves the level scores currently in memory to the saves file
 	func saveScores()
 	{
+		let saveName = ( timeAttackMode ? "timeSave" : "levelSave" )
+		let saveType = "txt"
+		saveScoresToFile( saveName , fileType: saveType )
+	}
+	
+	//saves the level scores currently in memory to the provided save file
+	func saveScoresToFile( fileName: String, fileType: String )
+	{
 		var toSave = [ Dictionary<String,String> ]()
 		for ( _ , lvlSave ) in levelSaves
 		{
 			toSave.append( lvlSave.convertToObject() )
 		}
 		let saveStr = Process.convertToString( toSave )
-		writeDocFile( "levelSave" , fileType: "txt" , strToWrite: "\(saveStr)" )
+		writeDocFile( fileName , fileType: fileType  , strToWrite: "\(saveStr)" )
+	}
+	
+	//loads the level scores from the save file provided
+	func loadScoresFromFile( fileName : String, fileType : String )
+	{
+		let objStr = readDocFile( fileName , fileType:  fileType )
+		print( "Loading\n\(objStr)\nDone Loading" )
+		levelSaves.removeAll()
+		levelSaves = LevelSave.convertObjects( Process( input : objStr ).getObjects() )
 	}
 	
 	//loads the saved level scores from the saves file
 	func loadScores()
 	{
-		let objStr = readDocFile( "levelSave" , fileType:  "txt" )
-		print( "Loading\n\(objStr)\nDone Loading" )
-		levelSaves = LevelSave.convertObjects( Process( input : objStr ).getObjects() )
+		let saveName = ( timeAttackMode ? "timeSave" : "levelSave" )
+		let saveType = "txt"
+		loadScoresFromFile( saveName , fileType: saveType )
 	}
 	
 	//for every gem button, sets the alpha lower if the gem is already the winning color

@@ -9,6 +9,8 @@
 @data
 	blue	white
 	blue	white
+@key
+	T1BLU
 #
 @name
 	Stripes
@@ -21,6 +23,8 @@
 @data
 	blue	blue
 	white	white
+@key
+	T2WHT
 #
 @name
 	Bevels
@@ -33,6 +37,8 @@
 @data
 	red		white
 	white	red
+@key
+	T3BEV
 #
 @name
 	Square
@@ -45,6 +51,8 @@
 @data
 	green	green
 	green	green
+@key
+	T4GRN
 #
 @name
 	The T
@@ -58,4 +66,6 @@
 	red		red		red
 	white	red		white
 	white	red		white
+@key
+	T5RED
 #

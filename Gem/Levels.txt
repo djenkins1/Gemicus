@@ -9,6 +9,8 @@
 @data
 	blue	white
 	blue	white
+@key
+	1BLU
 #
 @name
 	Red Bevel
@@ -21,6 +23,8 @@
 @data
 	red		white
 	white	red
+@key
+	2RED
 #
 @name
 	Green Square
@@ -33,6 +37,8 @@
 @data
 	green	green
 	green	green
+@key
+	3GRN
 #
 @name
 	Red Circle
@@ -46,6 +52,8 @@
 	red		red		red
 	red		white	red
 	red		red		red
+@key
+	4CIRC
 #
 @name
 	Blue X
@@ -59,6 +67,8 @@
 	blue	white	blue
 	white	blue	white
 	blue	white	blue
+@key
+	5BLU
 #
 @name
 	Yellow Cross
@@ -72,6 +82,8 @@
 	blue	yellow	blue
 	yellow	yellow	yellow
 	blue	yellow	blue
+@key
+	6YLW
 #
 @name
 	The T
@@ -85,6 +97,8 @@
 	red		red		red
 	white	red		white
 	white	red		white
+@key
+	7RED
 #
 @name
 	Always Blue
@@ -98,6 +112,8 @@
 	blue	blue		blue
 	blue	blue		blue
 	blue	blue		blue
+@key
+	8BLU
 #
 @name
 	Purple Chevron
@@ -111,6 +127,8 @@
 	white	purple	white
 	white	white	purple
 	white	purple	white
+@key
+	9PRP
 #
 @name
 	Columns
@@ -124,6 +142,8 @@
 	white	black	white
 	white	black	white
 	white	black	white
+@key
+	ACOL
 #
 @name
 	Yellow H
@@ -137,6 +157,8 @@
 	yellow	red		yellow
 	yellow	yellow	yellow
 	yellow	red		yellow
+@key
+	BYLW
 #
 @name
 	Red Corners
@@ -150,6 +172,8 @@
 	red		red		white
 	red		white	red
 	white	red		red
+@key
+	CRED
 #
 @name
 	Purple Box
@@ -164,6 +188,8 @@
 	purple	black	black	purple
 	purple	black	black	purple
 	purple	purple	purple	purple
+@key
+	DPRP
 #
 @name
 	Black Flag
@@ -179,6 +205,8 @@
 	black	black	black	black	black
 	black	white	white	white	black
 	black	black	black	black	black
+@key
+	EBLK
 #
 @name
 	Arizona
@@ -194,6 +222,8 @@
 	blue	red		red		red		blue
 	blue	red		blue	red		blue
 	blue	blue	blue	blue	blue
+@key
+	FRED
 #
 @name
 	Black and Yellow
@@ -209,6 +239,8 @@
 	black	yellow	yellow	yellow	black
 	black	black	black	yellow	black
 	black	yellow	yellow	yellow	black
+@key
+	GBLK
 #
 @name
 	Green Corners
@@ -224,6 +256,8 @@
 	white	red		red		red		white
 	green	white	red		white	green
 	green	green	white	green	green
+@key
+	HGRN
 #
 @name
 	Metal Grate
@@ -239,6 +273,8 @@
 	white	black	white	black	white
 	white	black	white	black	white
 	white	white	white	white	white
+@key
+	IWHT
 #
 @name
 	Islands
@@ -254,6 +290,8 @@
 	blue	blue	blue	blue	blue
 	blue	yellow	blue	yellow	blue
 	blue	blue	blue	blue	blue
+@key
+	JYLW
 #
 @name
 	Red Star
@@ -269,4 +307,6 @@
 	red		red		red		red		red
 	white	white	red		white	white
 	white	white	red		white	white
+@key
+	KRED
 #

@@ -10,13 +10,13 @@ import Foundation
 
 class LevelSave
 {
-	private var levelID : Int = -1
+	private var levelID = ""
 	
 	private var bestTime : Int = -1
 	
 	private var bestScore : Int = -1
 	
-	init( id : Int )
+	init( id : String )
 	{
 			self.levelID = id
 	}
@@ -81,7 +81,7 @@ class LevelSave
 	func convertToObject() -> Dictionary<String,String>
 	{
 		var toReturn = [String : String ]()
-		toReturn[ "key" ] = String(levelID)
+		toReturn[ "key" ] = levelID
 		toReturn[ "time" ] = String( bestTime )
 		toReturn[ "score" ] = String( bestScore )
 		return toReturn
@@ -97,7 +97,7 @@ class LevelSave
 			{
 				if let score = obj[ "score" ]
 				{
-					return LevelSave( id: Int(key)! ).setBestTime( Int(time)! ).setBestScore( Int(score)! )
+					return LevelSave( id: key ).setBestTime( Int(time)! ).setBestScore( Int(score)! )
 				}
 			}
 		}
@@ -106,9 +106,9 @@ class LevelSave
 	}
 	
 	//given an array of key value pairs, returns a dictionary of LevelSaves created from converting said pairs and extracting the keys
-	static func convertObjects( objDicts : Array<Dictionary<String,String>> ) -> Dictionary<Int,LevelSave>
+	static func convertObjects( objDicts : Array<Dictionary<String,String>> ) -> Dictionary<String,LevelSave>
 	{
-		var toReturn = [ Int : LevelSave]()
+		var toReturn = [ String : LevelSave]()
 		for dict in objDicts
 		{
 			let save = convertFromObject( dict )!

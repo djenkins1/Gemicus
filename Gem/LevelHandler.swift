@@ -12,9 +12,12 @@ class LevelHandler
 {
 	var levels = [Level]()
 	
-	init( levels : Array<Level> )
+	private(set) var packName = ""
+	
+	init( levels : Array<Level>, name : String = "" )
 	{
-			self.levels = levels
+		self.levels = levels
+		self.packName = name
 	}
 	
 	//for any level in the levels array, if said level does not have the rows and cols specified then it is dropped

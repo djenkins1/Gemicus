@@ -83,7 +83,7 @@ class Process
 			
 			
 			let level = Level( rows: Int( objDict["rows"]!)!, cols: Int( objDict[ "cols" ]! )!, author: objDict[ "author"]!, name: objDict[ "name" ]!, data: dataValues )
-			toReturn.append( level )
+			toReturn.append( level.withKey( objDict[ "key" ]! ) )
 		}
 		return toReturn
 	}
