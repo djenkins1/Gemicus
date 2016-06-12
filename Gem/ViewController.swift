@@ -109,21 +109,20 @@
 //time attack game mode
 //	(DONE)generated levels( i.e use templated levels and fill in colors randomly)
 //	(DONE)have levels started in TimeLevels.txt, just read them in and buckets based on size
+//	(DONE)for getting the levels, swap out the levelHandler with another levelHandler with the corresponding levels
+//	(DONE)do not show the star symbol or compare scores for level over screen
+//	(DONE)show the total completed/scoreSum/timeSum as normally
+//	(DONE)need to have completed be same as totalLevels
 //	chooses boards of certain size, i.e 2x2,3x3...
 //		should have room to choose level sizes, i.e buttons with 2x2, 3x3, 4x4, ALL
 //		picks 5 of these size and has player finish all 5. Saves overall time/score for that pack if best?
-//	for best code reuse, add in boolean to check if saving after every level and set to false if time attack
-//		(DONE)for getting the levels, swap out the levelHandler with another levelHandler with the corresponding levels
-//		do not show the star symbol or compare scores for level over screen
-//	would also have to change gameOver screen slightly?
-//		show the total completed/scoreSum/timeSum as normally
-//			need to have completed be same as totalLevels
 //	save the sum of score/time at end to another saves file into specific key based on size of boards
 //		would have to read this in and compare it
 //	back button should take back to menu in this gamemode instead and clear out old data
 //(?)switch from integer keys for level saves to a string key based on hexcode sequence?
 //	this will make adding levels in between current ones still use same scores even out of order
 //Ease in opacity when winning
+//time attack mode winds up with tutorial always
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -242,7 +241,6 @@ class ViewController: UIViewController
     override func viewDidLoad()
     {
         super.viewDidLoad()
-		loadScores()
 		playMusic()
 		createMenuView()
     }
@@ -289,17 +287,21 @@ class ViewController: UIViewController
 		var bestString = ""
 		let time = String(timeCount)//convertTimerTime( timeCount )
 		//let score = String( getScore() )
-		if ( levelSaves[ currentLevel ] != nil )
+		if ( !timeAttackMode )
 		{
-			if ( levelSaves[ currentLevel ]!.isTimeBetter( timeCount ) )
+			if ( levelSaves[ currentLevel ] != nil )
+			{
+				if ( levelSaves[ currentLevel ]!.isTimeBetter( timeCount ) )
+				{
+					bestString = " \(getStarText())"
+				}
+			}
+			else
 			{
 				bestString = " \(getStarText())"
 			}
 		}
-		else
-		{
-			bestString = " \(getStarText())"
-		}
+
 		button.setTitle( "Time:\t\(time)\(bestString)" , forState: .Normal )
 		NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(self.addScoreToWinDialog), userInfo: button, repeats: false)
 	}
@@ -340,22 +342,34 @@ class ViewController: UIViewController
 		let button = timerObj.userInfo as! UIButton
 		let score = String( scoreVal )
 		var bestString = ""
-		if ( levelSaves[ currentLevel ] != nil )
+		if !timeAttackMode
 		{
-			if ( levelSaves[ currentLevel ]!.isScoreBetter( scoreVal ) )
+			if ( levelSaves[ currentLevel ] != nil )
+			{
+				if ( levelSaves[ currentLevel ]!.isScoreBetter( scoreVal ) )
+				{
+					bestString = " \(getStarText())"
+				}
+				
+			}
+			else
 			{
 				bestString = " \(getStarText())"
 			}
-			levelSaves[ currentLevel ]!.setScoreIfBetter( scoreVal ).setTimeIfBetter( timeCount )
+			
+			saveScores()
+		}
+		
+		if ( levelSaves[ currentLevel ] == nil )
+		{
+			levelSaves[ currentLevel ] = LevelSave( id: currentLevel ).setBestScore( scoreVal ).setBestTime( timeCount )
 		}
 		else
 		{
-			levelSaves[ currentLevel ] = LevelSave( id: currentLevel ).setBestScore( scoreVal ).setBestTime( timeCount )
-			bestString = " \(getStarText())"
+			levelSaves[ currentLevel ]!.setScoreIfBetter( scoreVal ).setTimeIfBetter( timeCount )
 		}
 		
 		button.setTitle( button.currentTitle! + "\nScore:\t\(score)\(bestString)", forState: .Normal )
-		self.saveScores()
 		playGemSound( true )
 		toggleGuiButton( prevButton, doEnable: true )
 		toggleGuiButton( nextButton, doEnable: true )
@@ -452,6 +466,7 @@ class ViewController: UIViewController
 	
 	func clickPlayButton()
 	{
+		levelSaves.removeAll()
 		timeAttackMode = true
 		readLevels( true )
 		levelHandler.stripLevelsNotOfSize( 2, cols: 2 )
@@ -716,6 +731,7 @@ class ViewController: UIViewController
 		}
 		
 		currentLevel = 0
+		loadScores()
 		readLevels( false )
 		resetMyView()
 		createLevelsView()
