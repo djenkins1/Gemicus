@@ -20,8 +20,14 @@ class LevelHandler
 		self.packName = name
 	}
 	
+	func withPackName( name : String ) -> LevelHandler
+	{
+		self.packName = name
+		return self
+	}
+	
 	//for any level in the levels array, if said level does not have the rows and cols specified then it is dropped
-	func stripLevelsNotOfSize( rows : Int, cols : Int )
+	func stripLevelsNotOfSize( rows : Int, cols : Int ) -> LevelHandler
 	{
 		var newLevels = [Level]()
 		for level in levels
@@ -35,6 +41,31 @@ class LevelHandler
 		levels.removeAll()
 		levels.appendContentsOf( newLevels )
 		generateColors()
+		return self
+	}
+	
+	//randomizes the levels array
+	func shuffleLevels() -> LevelHandler
+	{
+		levels = ViewController.shuffleArray( levels )
+		return self
+	}
+	
+	//trims the number of levels to the size provided if the provided size is valid
+	func trimLevelsTo( newSize : Int = 5 ) -> LevelHandler
+	{
+		if ( newSize < 0 || newSize >= levels.count )
+		{
+			print( "Trying to trim to illegal size: \(newSize). Current size: \(levels.count)" )
+			return self
+		}
+		
+		while ( levels.count > newSize )
+		{
+			levels.removeLast()
+		}
+		
+		return self
 	}
 	
 	//for every level in levels array, put through generateLevel function

@@ -18,7 +18,7 @@ class LevelSave
 	
 	init( id : String )
 	{
-			self.levelID = id
+		self.levelID = id
 	}
 	
 	//overwrites the current time with the time provided and returns self

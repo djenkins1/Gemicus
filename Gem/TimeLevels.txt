@@ -55,6 +55,20 @@
 	T4GRN
 #
 @name
+	The L
+@author
+	Dilan Jenkins
+@rows
+	2
+@cols
+	2
+@data
+	red		white
+	red		red
+@key
+	T5RED
+#
+@name
 	The T
 @author
 	Dilan Jenkins
@@ -67,5 +81,5 @@
 	white	red		white
 	white	red		white
 @key
-	T5RED
+	T6WHT
 #

@@ -119,10 +119,10 @@
 //	(DONE)back button should take back to menu in this gamemode instead and clear out old data
 //	chooses boards of certain size, i.e 2x2,3x3...
 //		should have room to choose level sizes, i.e buttons with 2x2, 3x3, 4x4, ALL
-//		picks 5 of these size and has player finish all 5. Saves overall time/score for that pack if best?
-//	save the sum of score/time at end to another saves file into specific key based on size of boards
-//		TODO: NEED SEPERATE dict for pack saves versus level saves and need to load/save differently
-//		TODO: NEED TO ASSIGN PACK NAME to levelHandler BASED ON CHOSEN GAME SIZES
+//		(DONE)picks 5 of these size and has player finish all 5. Saves overall time/score for that pack if best?
+//	(DONE)save the sum of score/time at end to another saves file into specific key based on size of boards
+//	NEED TO ASSIGN PACK NAME to levelHandler BASED ON CHOSEN GAME SIZES
+//	show a silver trophy if score or time is not better than old one
 //Ease in opacity when winning
 //++++++++++++++++++++++++++++++++++++
 //
@@ -238,6 +238,11 @@ class ViewController: UIViewController
 	
 	//this is true if the player is in time attack game mode or false otherwise
 	var timeAttackMode = false
+	
+	//holds the saves for the time attack sized packs
+	var timePackSaves = [ String : LevelSave ]()
+	
+	var firstLoadCalled = false
 
     override func viewDidLoad()
     {
@@ -311,6 +316,11 @@ class ViewController: UIViewController
 	func isFirstLoad() -> Bool
 	{
 		//return ( levelSaves.count == 0 )
+		if ( firstLoadCalled )
+		{
+			return false
+		}
+		firstLoadCalled = true
 		return !( docFileExists( "levelSave" , fileType: "txt" ) || docFileExists( "timeSave" , fileType: "txt" ) )
 	}
 	
@@ -480,7 +490,8 @@ class ViewController: UIViewController
 		levelSaves.removeAll()
 		timeAttackMode = true
 		readLevels( true )
-		levelHandler.stripLevelsNotOfSize( 2, cols: 2 )
+		levelHandler.withPackName( "2x2" ).stripLevelsNotOfSize( 2, cols: 2 ).shuffleLevels().trimLevelsTo()
+		loadScores()
 		gotoNextLevel()
 		
 	}
@@ -935,16 +946,16 @@ class ViewController: UIViewController
 			return
 		}
 		
-		if ( levelSaves[ levelHandler.packName ] != nil )
+		if ( timePackSaves[ levelHandler.packName ] != nil )
 		{
-			levelSaves[ levelHandler.packName ]!.setScoreIfBetter( self.sumScores() ).setTimeIfBetter( self.sumTimes() )
+			timePackSaves[ levelHandler.packName ]!.setScoreIfBetter( self.sumScores() ).setTimeIfBetter( self.sumTimes() )
 		}
 		else
 		{
-			levelSaves[ levelHandler.packName ] = LevelSave( id: levelHandler.packName ).setBestScore( self.sumScores() ).setBestTime( self.sumTimes() )
+			timePackSaves[ levelHandler.packName ] = LevelSave( id: levelHandler.packName ).setBestScore( self.sumScores() ).setBestTime( self.sumTimes() )
 		}
 		
-		saveScores()
+		saveTimeScoresToFile()
 	}
 	
 	//returns the sum of all the scores in the current levelSaves
@@ -1272,7 +1283,6 @@ class ViewController: UIViewController
 	{
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
 		toggleGuiButton( prevButton , doEnable: true )
-		levelTitle.userInteractionEnabled = true
 		gemCopy.removeAll()
 		showingOverlay = true
 		let level = Level.defaultLevels( levelHandler )[ currentLevel ]
@@ -1300,7 +1310,6 @@ class ViewController: UIViewController
 	{
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "stone")!)
 		toggleGuiButton( prevButton, doEnable: false )
-		levelTitle.userInteractionEnabled = false
 		var index = -1
 		for gem in allGems
 		{
@@ -1625,16 +1634,22 @@ class ViewController: UIViewController
 	//saves the level scores currently in memory to the saves file
 	func saveScores()
 	{
-		let saveName = ( timeAttackMode ? "timeSave" : "levelSave" )
 		let saveType = "txt"
-		saveScoresToFile( saveName , fileType: saveType )
+		saveScoresToFile( "levelSave" , fileType: saveType, saves: levelSaves )
+	}
+	
+	//saves the time scores currently in memory to the time scores file
+	func saveTimeScoresToFile()
+	{
+		let saveType = "txt"
+		saveScoresToFile( "timeSave" , fileType: saveType, saves: timePackSaves )
 	}
 	
 	//saves the level scores currently in memory to the provided save file
-	func saveScoresToFile( fileName: String, fileType: String )
+	func saveScoresToFile( fileName: String, fileType: String, saves : Dictionary<String, LevelSave> )
 	{
 		var toSave = [ Dictionary<String,String> ]()
-		for ( _ , lvlSave ) in levelSaves
+		for ( _ , lvlSave ) in saves
 		{
 			toSave.append( lvlSave.convertToObject() )
 		}
@@ -1643,20 +1658,27 @@ class ViewController: UIViewController
 	}
 	
 	//loads the level scores from the save file provided
-	func loadScoresFromFile( fileName : String, fileType : String )
+	func loadScoresFromFile( fileName : String, fileType : String ) -> Dictionary<String,LevelSave>
 	{
 		let objStr = readDocFile( fileName , fileType:  fileType )
 		print( "Loading\n\(objStr)\nDone Loading" )
-		levelSaves.removeAll()
-		levelSaves = LevelSave.convertObjects( Process( input : objStr ).getObjects() )
+		return LevelSave.convertObjects( Process( input : objStr ).getObjects() )
 	}
 	
 	//loads the saved level scores from the saves file
 	func loadScores()
 	{
-		let saveName = ( timeAttackMode ? "timeSave" : "levelSave" )
 		let saveType = "txt"
-		loadScoresFromFile( saveName , fileType: saveType )
+		levelSaves.removeAll()
+		timePackSaves.removeAll()
+		if ( timeAttackMode )
+		{
+			timePackSaves = loadScoresFromFile( "timeSave" , fileType: saveType )
+		}
+		else
+		{
+			levelSaves = loadScoresFromFile( "levelSave" , fileType: saveType )
+		}
 	}
 	
 	//for every gem button, sets the alpha lower if the gem is already the winning color
@@ -1677,6 +1699,24 @@ class ViewController: UIViewController
 				gem.gemButton.alpha = 0.5
 			}
 		}
+	}
+	
+	//returns an array with all the input array elements shuffled
+	static func shuffleArray<T>( array: Array<T> ) -> Array<T>
+	{
+		var toReturn = [T]()
+		var copy  = [T]()
+		for val in array
+		{
+			copy.append( val )
+		}
+		
+		while copy.count > 0
+		{
+			let index = Int( arc4random_uniform( UInt32( copy.count ) ) )
+			toReturn.append( copy.removeAtIndex( index ) )
+		}
+		return toReturn
 	}
 }
 
