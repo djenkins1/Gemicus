@@ -101,6 +101,18 @@
 //	(DONE)if all levels beaten use gold trophy, otherwise silver
 //	(DONE)animation for trophy, maybe set its scale to really small on create then make bigger?
 //	(DONE)sound effect for trophy big
+//(DONE)time attack game mode
+//	(DONE)generated levels( i.e use templated levels and fill in colors randomly)
+//	(DONE)have levels started in TimeLevels.txt, just read them in and buckets based on size
+//	(DONE)for getting the levels, swap out the levelHandler with another levelHandler with the corresponding levels
+//	(DONE)do not show the star symbol or compare scores for level over screen
+//	(DONE)show the total completed/scoreSum/timeSum as normally
+//	(DONE)need to have completed be same as totalLevels
+//	(DONE)back button should take back to menu in this gamemode instead and clear out old data
+//	(DONE)should have room to choose level sizes, i.e buttons with 2x2, 3x3, 4x4, ALL
+//	(DONE)picks 5 of these size and has player finish all 5. Saves overall time/score for that pack if best?
+//	(DONE)save the sum of score/time at end to another saves file into specific key based on size of boards
+//	(DONE)NEED TO ASSIGN PACK NAME to levelHandler BASED ON CHOSEN GAME SIZES
 //
 //++++++++++++++++++++
 //BEFORE RELEASE
@@ -109,20 +121,8 @@
 //	maybe change to 2nd level on single square tile
 //	or maybe just have one gem on block background
 //try and cut down on file sizes, was >30mb
-//time attack game mode
-//	(DONE)generated levels( i.e use templated levels and fill in colors randomly)
-//	(DONE)have levels started in TimeLevels.txt, just read them in and buckets based on size
-//	(DONE)for getting the levels, swap out the levelHandler with another levelHandler with the corresponding levels
-//	(DONE)do not show the star symbol or compare scores for level over screen
-//	(DONE)show the total completed/scoreSum/timeSum as normally
-//	(DONE)need to have completed be same as totalLevels
-//	(DONE)back button should take back to menu in this gamemode instead and clear out old data
-//	chooses boards of certain size, i.e 2x2,3x3...
-//		should have room to choose level sizes, i.e buttons with 2x2, 3x3, 4x4, ALL
-//		(DONE)picks 5 of these size and has player finish all 5. Saves overall time/score for that pack if best?
-//	(DONE)save the sum of score/time at end to another saves file into specific key based on size of boards
-//	NEED TO ASSIGN PACK NAME to levelHandler BASED ON CHOSEN GAME SIZES
-//	show a silver trophy if score or time is not better than old one
+//add more time attack levels, should at least have 5 per pack
+//(?)show a silver trophy on time attack end view if score or time is not better than old one
 //Ease in opacity when winning
 //++++++++++++++++++++++++++++++++++++
 //
@@ -427,7 +427,6 @@ class ViewController: UIViewController
 		levelButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (2 * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
 		infoButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (3 * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
 		credButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + (4 * (padding + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
-		//muteButton.frame = CGRectMake( CGFloat( centerX + CGFloat( defaultWidth / 2 ) + 24 ), CGFloat( startY - 8 ), CGFloat( 48 ), CGFloat(48 ))
 		muteButton.frame = CGRectMake( CGFloat( 24 ) , CGFloat( 24 ), CGFloat( 48 ), CGFloat(48 ))
 		
 		let backImage = UIImage( named: "menuButton" ) as UIImage?
@@ -470,6 +469,52 @@ class ViewController: UIViewController
 		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
 	}
 	
+	//creates the pack selector for the time attack game mode
+	func createTimeModeView()
+	{
+		currentLevel = 0
+		if ( currentLevel >= 0 )
+		{
+			currentLevel = currentLevel - 1
+		}
+		timeAttackMode = true
+		resetMyView()
+		clearBoardData()
+		let screenWidth = UIScreen.mainScreen().bounds.width
+		let titleWidth = Int( ceil(screenWidth * 0.5) )
+		let padding = Int( ceil( UIScreen.mainScreen().bounds.height * 0.04 ) )
+		let centerX = screenWidth / 2
+		let startY = Int( ceil( UIScreen.mainScreen().bounds.width * 0.33 ) )
+		let defaultWidth = 128
+		let defaultHeight = 32
+		let backImage = UIImage( named: "menuButton" ) as UIImage?
+		let titleImage = UIImage( named: "title" ) as UIImage?
+		let gameTitle = UIButton(type: UIButtonType.Custom) as UIButton
+		gameTitle.frame = CGRectMake( CGFloat( centerX - CGFloat( titleWidth / 2 ) ), CGFloat( startY ), CGFloat( titleWidth ), CGFloat(defaultHeight ))
+		gameTitle.setBackgroundImage( titleImage, forState: .Normal )
+		gameTitle.setTitleColor( UIColor.blackColor(), forState: .Normal)
+		gameTitle.setTitle( "Time Attack", forState: .Normal )
+		gameTitle.userInteractionEnabled = false
+		self.view.addSubview(gameTitle)
+		var indexAtOne = 0
+		for packName in TimePack().listPacks()
+		{
+			indexAtOne += 1
+			let packButton = UIButton(type: UIButtonType.Custom) as UIButton
+			packButton.frame = CGRectMake( CGFloat( centerX - CGFloat( defaultWidth / 2 ) ), CGFloat( startY + ( indexAtOne * ( padding  + defaultHeight ) ) ), CGFloat( defaultWidth ), CGFloat(defaultHeight ))
+			packButton.setBackgroundImage( backImage, forState: .Normal )
+			packButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
+			packButton.setTitle( packName , forState: .Normal )
+			packButton.addTarget( self, action: #selector( self.clickTimePackButton(_:)) , forControlEvents: .TouchUpInside)
+			self.view.addSubview(packButton)
+		}
+		
+		self.view.backgroundColor = UIColor(patternImage: UIImage(named: "darkstone")!)
+		let button = createDialog()
+		button.setTitle( "Choose board size" , forState:  .Normal )
+		button.userInteractionEnabled = false
+	}
+	
 	func clickMuteButton( sender : AnyObject! )
 	{
 		if ( isMuted )
@@ -487,14 +532,20 @@ class ViewController: UIViewController
 	
 	func clickPlayButton()
 	{
+		createTimeModeView()
+	}
+	
+	func clickTimePackButton( sender: AnyObject )
+	{
+		let buttonKey = (sender as! UIButton).currentTitle!
 		levelSaves.removeAll()
 		timeAttackMode = true
 		readLevels( true )
-		levelHandler.withPackName( "2x2" ).stripLevelsNotOfSize( 2, cols: 2 ).shuffleLevels().trimLevelsTo()
 		loadScores()
+		TimePack().processLevelHandler( levelHandler, packCode: buttonKey )
 		gotoNextLevel()
-		
 	}
+
 	
 	//returns the corresponding unicode character for the mute state provided
 	func getMuteIconText( isMuted : Bool ) -> String
@@ -1105,7 +1156,8 @@ class ViewController: UIViewController
 	{
 		if ( timeAttackMode )
 		{
-			backToMenu()
+			//backToMenu()
+			createTimeModeView()
 		}
 		else
 		{

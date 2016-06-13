@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FE0803671D0E9026009228BF /* TimePack.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0803661D0E9026009228BF /* TimePack.swift */; };
 		FE0CB99D1D0BA2F5008F91C9 /* TimeLevels.txt in Resources */ = {isa = PBXBuildFile; fileRef = FE0CB99C1D0BA2F5008F91C9 /* TimeLevels.txt */; };
 		FE1F64131D0A9ECC006951A7 /* ScoreObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE1F64121D0A9ECC006951A7 /* ScoreObject.swift */; };
 		FE1F64151D0AA1FD006951A7 /* PDGameOver.aif in Resources */ = {isa = PBXBuildFile; fileRef = FE1F64141D0AA1FD006951A7 /* PDGameOver.aif */; };
@@ -34,6 +35,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FE0803661D0E9026009228BF /* TimePack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimePack.swift; sourceTree = "<group>"; };
 		FE0CB99C1D0BA2F5008F91C9 /* TimeLevels.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TimeLevels.txt; sourceTree = "<group>"; };
 		FE1F64121D0A9ECC006951A7 /* ScoreObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScoreObject.swift; sourceTree = "<group>"; };
 		FE1F64141D0AA1FD006951A7 /* PDGameOver.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = PDGameOver.aif; sourceTree = "<group>"; };
@@ -117,6 +119,7 @@
 				FEBCA9281CF6861000A419E7 /* Levels.txt */,
 				FE0CB99C1D0BA2F5008F91C9 /* TimeLevels.txt */,
 				FE4375FA1CF82C3800491F4E /* Credits.txt */,
+				FE0803661D0E9026009228BF /* TimePack.swift */,
 			);
 			path = Gem;
 			sourceTree = "<group>";
@@ -205,6 +208,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FEFB29ED1CF3A46D002B2BAF /* ViewController.swift in Sources */,
+				FE0803671D0E9026009228BF /* TimePack.swift in Sources */,
 				FEFB29EB1CF3A46D002B2BAF /* AppDelegate.swift in Sources */,
 				FED1C19B1CF514790084AAB2 /* Level.swift in Sources */,
 				FED1C19D1CF5178A0084AAB2 /* GemColor.swift in Sources */,

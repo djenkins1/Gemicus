@@ -83,3 +83,18 @@
 @key
 	T6WHT
 #
+@name
+	Tricolor
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	white	yellow	white
+	yellow	blue	yellow
+	white	yellow	white
+@key
+	T7TRI
+#
