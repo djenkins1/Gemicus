@@ -79,6 +79,9 @@
 //(DONE)switch from integer keys for level saves to a string key based on hexcode sequence?
 //(SCRAP)maybe have minimum score shown to player be zero?
 //(FIXED)time attack mode winds up with tutorial always
+//(DONE)Ease in opacity when winning
+//(DONE)add a back button for time attack pack chooser view
+//(DONE)add more time attack levels, should at least have 5 per pack
 //(DONE)views
 //      (DONE)menu
 //      (DONE)all levels view
@@ -117,13 +120,12 @@
 //++++++++++++++++++++
 //BEFORE RELEASE
 //++++++++++++++++++++
-//maybe update the app icon so that it has a different color background then black
+//update the app icon so that it has a different color background then black
 //	maybe change to 2nd level on single square tile
 //	or maybe just have one gem on block background
-//try and cut down on file sizes, was >30mb
-//add more time attack levels, should at least have 5 per pack
-//(?)show a silver trophy on time attack end view if score or time is not better than old one
-//Ease in opacity when winning
+//(?)try and cut down on file sizes, was >30mb
+//test on more simulated devices
+//(?)add at least one more 2x2 level(gets rid of print illegal size)
 //++++++++++++++++++++++++++++++++++++
 //
 //==================
@@ -147,7 +149,10 @@
 //	have level pack named ipad that has larger boards
 //(?)random glint animations for gems
 //(?)save mute/unmute status in options file
+//(?)show a silver trophy on time attack end view if score or time is not better than old one
 //maybe have option to turn off animations winning
+//optional forceColor attribute for timeAttack levels that requires the level not have generated colors
+//better error handling for data format, i.e missing parameter should print out what is missing and the objects other info
 //====================================================
 
 
@@ -489,6 +494,7 @@ class ViewController: UIViewController
 		let defaultHeight = 32
 		let backImage = UIImage( named: "menuButton" ) as UIImage?
 		let titleImage = UIImage( named: "title" ) as UIImage?
+		let buttonImage = UIImage( named: "button" ) as UIImage?
 		let gameTitle = UIButton(type: UIButtonType.Custom) as UIButton
 		gameTitle.frame = CGRectMake( CGFloat( centerX - CGFloat( titleWidth / 2 ) ), CGFloat( startY ), CGFloat( titleWidth ), CGFloat(defaultHeight ))
 		gameTitle.setBackgroundImage( titleImage, forState: .Normal )
@@ -496,6 +502,17 @@ class ViewController: UIViewController
 		gameTitle.setTitle( "Time Attack", forState: .Normal )
 		gameTitle.userInteractionEnabled = false
 		self.view.addSubview(gameTitle)
+		
+		
+		let backButton = UIButton(type: UIButtonType.Custom) as UIButton
+		backButton.setBackgroundImage( buttonImage, forState: .Normal )
+		backButton.setTitle( "<-" , forState: .Normal )
+		backButton.setTitleColor( UIColor.blackColor(), forState: .Normal)
+		let backWidthCenter = ( defaultHeight / 2 )
+		backButton.frame = CGRectMake( CGFloat( centerX - CGFloat( titleWidth / 2 ) - CGFloat( padding + backWidthCenter ) ), CGFloat( startY ), CGFloat( defaultHeight ), CGFloat(defaultHeight ))
+		backButton.addTarget( self, action: #selector( self.backToMenu ) , forControlEvents: .TouchUpInside)
+		self.view.addSubview(backButton)
+		
 		var indexAtOne = 0
 		for packName in TimePack().listPacks()
 		{
@@ -805,8 +822,7 @@ class ViewController: UIViewController
 		
 		timeAttackMode = false
 		currentLevel = 0
-		loadScores()
-		readLevels( false )
+		setupLevels( debugEnd )
 		resetMyView()
 		createLevelsView()
 	}
@@ -977,16 +993,6 @@ class ViewController: UIViewController
 			}
 		)
 		
-		
-		/*
-		trophyButton.alpha = 0.5
-		UIView.animateWithDuration(1.0, delay:0, options: [.Repeat, .Autoreverse], animations: {
-			
-			trophyButton.alpha = 1.0
-			
-			}, completion: nil
-		)
-		*/
 	}
 	
 	//updates and saves the scores for the time attack mode if timeAttackMode is true
@@ -1172,6 +1178,8 @@ class ViewController: UIViewController
 		{
 			return
 		}
+		
+		timeAttackMode = false
 		showingTutorial = false
 		if ( currentLevel >= 0 )
 		{
@@ -1240,12 +1248,25 @@ class ViewController: UIViewController
 		createGameView()
 	}
 	
+	//handles loading the levels and scores into memory for normal game mode
+	func setupLevels( doLoadTimePack : Bool = false )
+	{
+		loadScores()
+		readLevels( doLoadTimePack )
+	}
+	
 	func gotoHelpView()
 	{
 		if ( debugEnd )
 		{
+			setupLevels()
 			gotoEndView()
 			return
+		}
+		
+		if ( levelHandler == nil || levelHandler.levels.isEmpty )
+		{
+			setupLevels()
 		}
 		showingTutorial = true
 		currentLevel = -1
@@ -1292,7 +1313,6 @@ class ViewController: UIViewController
         let totalSize = floor( screenWidth + screenHeight )
 		//fancy math to make the width and height of each gem be resized based on total number of gems on the level
         let gemSize = Int(totalSize) / Int( ( gemsPerRow ) * 3 )
-        //print( "Gem size: \(gemSize)")
 		
         for index in 0..<maxGems
         {
@@ -1588,7 +1608,6 @@ class ViewController: UIViewController
 			do
 			{
 				let contents = try NSString(contentsOfFile: filepath, usedEncoding: nil) as String
-				//print(contents)
 				levelHandler = LevelHandler( levels: Process( input: contents ).getLevels() )
 			}
 			catch
@@ -1612,13 +1631,7 @@ class ViewController: UIViewController
 			do
 			{
 				let contents = try NSString(contentsOfFile: filepath, usedEncoding: nil) as String
-				//print(contents)
-				//levelHandler = LevelHandler( levels: Process( input: contents ).getLevels() )
 				toReturn = Process( input: contents ).getObjects()
-				
-				//print( "CRED PROCESS" )
-				//print( Process.convertToString( toReturn ) )
-				//print( "END CRED PROCESS" )
 			}
 			catch
 			{
@@ -1713,7 +1726,7 @@ class ViewController: UIViewController
 	func loadScoresFromFile( fileName : String, fileType : String ) -> Dictionary<String,LevelSave>
 	{
 		let objStr = readDocFile( fileName , fileType:  fileType )
-		print( "Loading\n\(objStr)\nDone Loading" )
+		//print( "Loading\n\(objStr)\nDone Loading" )
 		return LevelSave.convertObjects( Process( input : objStr ).getObjects() )
 	}
 	
@@ -1744,11 +1757,23 @@ class ViewController: UIViewController
 			index = index + 1
 			if isOverlay || levelData[ index ] != gem.currentSprite
 			{
-				gem.gemButton.alpha = 1.0
+				UIView.animateWithDuration( 0.5, animations: {
+					
+					gem.gemButton.alpha = 1.0
+					
+					}, completion: nil
+				)
+				//gem.gemButton.alpha = 1.0
 			}
 			else
 			{
-				gem.gemButton.alpha = 0.5
+				UIView.animateWithDuration( 0.5, animations: {
+					
+					gem.gemButton.alpha = 0.5
+					
+					}, completion: nil
+				)
+				//gem.gemButton.alpha = 0.5
 			}
 		}
 	}

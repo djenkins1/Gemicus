@@ -10,7 +10,7 @@
 	blue	white
 	blue	white
 @key
-	T1BLU
+	T1_BLU
 #
 @name
 	Stripes
@@ -24,7 +24,7 @@
 	blue	blue
 	white	white
 @key
-	T2WHT
+	T2_WHT
 #
 @name
 	Bevels
@@ -38,7 +38,7 @@
 	red		white
 	white	red
 @key
-	T3BEV
+	T3_BEV
 #
 @name
 	Square
@@ -52,7 +52,7 @@
 	green	green
 	green	green
 @key
-	T4GRN
+	T4_GRN
 #
 @name
 	The L
@@ -66,7 +66,7 @@
 	red		white
 	red		red
 @key
-	T5RED
+	T5_RED
 #
 @name
 	The T
@@ -81,7 +81,7 @@
 	white	red		white
 	white	red		white
 @key
-	T6WHT
+	T6_WHT
 #
 @name
 	Tricolor
@@ -96,5 +96,207 @@
 	yellow	blue	yellow
 	white	yellow	white
 @key
-	T7TRI
+	T7_TRI
+#
+@name
+	The U
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	blue	green	blue
+	blue	green	blue
+	blue	blue	blue
+@key
+	T8_BGRN
+#
+@name
+	The Y
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	purple	yellow	purple
+	yellow	purple	yellow
+	yellow	purple	yellow
+@key
+	T9_YLW
+#
+@name
+	We Are One
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	black	black	black
+	black	black	black
+	black	black	black
+@key
+	TA_BLK
+#
+@name
+	Columns
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	white	black	white
+	white	black	white
+	white	black	white
+@key
+	TB_WHT
+#
+@name
+	Diagonal
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	yellow	purple	purple
+	purple	yellow	purple
+	purple	purple	yellow
+@key
+	TC_PYD
+#
+@name
+	The Arrow
+@author
+	Dilan Jenkins
+@rows
+	3
+@cols
+	3
+@data
+	white	yellow	yellow
+	white	black	yellow
+	black	white	white
+@key
+	TD_ARW
+#
+@name
+	The Box
+@author
+	Dilan Jenkins
+@rows
+	4
+@cols
+	4
+@key
+	T41_BOX
+@data
+	black	black	black	black
+	black	white	white	black
+	black	white	white	black
+	black	black	black	black
+#
+@name
+	The Head
+@author
+	Dilan Jenkins
+@rows
+	4
+@cols
+	4
+@key
+	T42_HED
+@data
+	yellow	yellow	yellow	yellow
+	yellow	white	white	yellow
+	yellow	white	white	yellow
+	yellow	white	white	yellow
+#
+@name
+	The C
+@author
+	Dilan Jenkins
+@rows
+	4
+@cols
+	4
+@key
+	T43_CRED
+@data
+	red		red		red		red
+	red		black	black	black
+	red		black	black	black
+	red		red		red		red
+#
+@name
+	The Stache
+@author
+	Dilan Jenkins
+@rows
+	4
+@cols
+	4
+@key
+	T44_STCH
+@data
+	white	black	black	white
+	white	white	white	white
+	white	black	black	white
+	black	white	white	black
+#
+@name
+	The N
+@author
+	Dilan Jenkins
+@rows
+	4
+@cols
+	4
+@key
+	T45_NORG
+@data
+	orange	black	black	orange
+	orange	orange	black	orange
+	orange	black	orange	orange
+	orange	black	black	orange
+#
+@name
+	Pong
+@author
+	Dilan Jenkins
+@rows
+	4
+@cols
+	4
+@key
+	T45_PNG
+@data
+	white	black	black	white
+	white	blue	black	white
+	white	black	black	white
+	white	black	black	white
+#
+@name
+	Four Cheese
+@author
+	Dilan Jenkins
+@rows
+	4
+@cols
+	4
+@key
+	T46_FOR
+@data
+	white	red		green	blue
+	white	red		green	blue
+	white	red		green	blue
+	white	red		green	blue
 #
