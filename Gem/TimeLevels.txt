@@ -10,7 +10,7 @@
 	blue	white
 	blue	white
 @key
-	T1_BLU
+	T21_BLU
 #
 @name
 	Stripes
@@ -24,7 +24,7 @@
 	blue	blue
 	white	white
 @key
-	T2_WHT
+	T22_WHT
 #
 @name
 	Bevels
@@ -38,7 +38,7 @@
 	red		white
 	white	red
 @key
-	T3_BEV
+	T23_BEV
 #
 @name
 	Square
@@ -52,7 +52,7 @@
 	green	green
 	green	green
 @key
-	T4_GRN
+	T24_GRN
 #
 @name
 	The L
@@ -66,7 +66,21 @@
 	red		white
 	red		red
 @key
-	T5_RED
+	T25_RED
+#
+@name
+	Surprise
+@author
+	Dilan Jenkins
+@rows
+	2
+@cols
+	2
+@data
+	red		blue
+	yellow	green
+@key
+	T26_SRP
 #
 @name
 	The T

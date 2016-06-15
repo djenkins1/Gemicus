@@ -78,10 +78,15 @@
 //(FIXED)No longer saves score past first level in normal game mode
 //(DONE)switch from integer keys for level saves to a string key based on hexcode sequence?
 //(SCRAP)maybe have minimum score shown to player be zero?
+//(SCRAP)try and cut down on file sizes, was >30mb
 //(FIXED)time attack mode winds up with tutorial always
 //(DONE)Ease in opacity when winning
 //(DONE)add a back button for time attack pack chooser view
 //(DONE)add more time attack levels, should at least have 5 per pack
+//(DONE)test on more simulated devices
+//(FIXED)startY is too close to top for iphone 4s, gems are slightly on top of gui buttons
+//(DONE)add at least one more 2x2 level(gets rid of print illegal size)
+//(DONE)update the app icon so that it has a different color background then black
 //(DONE)views
 //      (DONE)menu
 //      (DONE)all levels view
@@ -116,17 +121,6 @@
 //	(DONE)picks 5 of these size and has player finish all 5. Saves overall time/score for that pack if best?
 //	(DONE)save the sum of score/time at end to another saves file into specific key based on size of boards
 //	(DONE)NEED TO ASSIGN PACK NAME to levelHandler BASED ON CHOSEN GAME SIZES
-//
-//++++++++++++++++++++
-//BEFORE RELEASE
-//++++++++++++++++++++
-//update the app icon so that it has a different color background then black
-//	maybe change to 2nd level on single square tile
-//	or maybe just have one gem on block background
-//(?)try and cut down on file sizes, was >30mb
-//test on more simulated devices
-//(?)add at least one more 2x2 level(gets rid of print illegal size)
-//++++++++++++++++++++++++++++++++++++
 //
 //==================
 //future ideas
@@ -1304,10 +1298,8 @@ class ViewController: UIViewController
         let screenSize: CGRect = UIScreen.mainScreen().bounds
         let screenWidth = screenSize.width * 0.8
         let screenHeight = screenSize.height * 0.8
-		//let the padding to the left of the gem board be based on the width of the screen
-        //let startX = floor( Double( screenSize.width * 0.15 ) )
 		//let the top left corner of the game board be based on the height of the screen
-        let startY = floor( Double( screenSize.height * 0.2 ))
+        let startY = floor( Double( screenSize.height * 0.22 ))
 		
         let gemsPerRow = floor( sqrt( Double( maxGems ) ) )
         let totalSize = floor( screenWidth + screenHeight )
@@ -1319,7 +1311,7 @@ class ViewController: UIViewController
             let button = UIButton(type: UIButtonType.Custom) as UIButton
             let column = ( index % Int( gemsPerRow ) )
             let row = ( index / Int(gemsPerRow) )
-            //let x = Double( ( column  * gemSize )  ) + startX
+
 			let x = centerBoxPosition( Int(gemsPerRow), index: column, boxWidth: gemSize )
             let y = Double( ( row * gemSize )  ) + startY
             button.frame = CGRectMake( CGFloat( x ), CGFloat( y ), CGFloat( gemSize ), CGFloat(gemSize))
